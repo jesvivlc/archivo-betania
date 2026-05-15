@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archivo Digital · Provincia de Betania · Escuelas Pías</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Variables ───────────────────────────────────────────── */
+    :root {
+      --blue:       #0057A8;
+      --blue-dark:  #003D7A;
+      --blue-light: #E8F1FB;
+      --orange:     #F47920;
+      --orange-lt:  #FEF0E6;
+      --white:      #FFFFFF;
+      --gray-bg:    #F5F7FA;
+      --gray-text:  #2D2D2D;
+      --gray-muted: #6B7280;
+      --gray-border:#E5E7EB;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,.08);
+      --shadow-md:  0 4px 16px rgba(0,0,0,.10);
+      --shadow-lg:  0 8px 32px rgba(0,0,0,.12);
+      --radius-card:12px;
+      --radius-btn: 8px;
+      --radius-pill:24px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      font-size: 15px;
+      color: var(--gray-text);
+      background: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+    }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    header {
+      background: var(--white);
+      border-bottom: 3px solid var(--blue);
+      padding: .85rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-logo { height: 50px; width: auto; object-fit: contain; flex-shrink: 0; }
+    .header-divider { width: 1px; height: 36px; background: var(--gray-border); flex-shrink: 0; }
+
+    .header-text h1 { font-size: 1.05rem; font-weight: 700; color: var(--blue); line-height: 1.2; }
+    .header-text p  { font-size: .72rem; font-weight: 500; color: var(--gray-muted); letter-spacing: .04em; text-transform: uppercase; margin-top: .1rem; }
+
+    /* ── Hero ────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+      padding: 3.5rem 1.5rem 4rem;
+      text-align: center;
+      color: var(--white);
+    }
+
+    .hero h2 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; margin-bottom: .6rem; }
+    .hero p  { font-size: 1rem; color: rgba(255,255,255,.75); margin-bottom: 2rem; }
+
+    .hero-search {
+      display: flex;
+      max-width: 620px;
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hero-search input {
+      flex: 1; border: none; outline: none;
+      padding: .9rem 1.25rem;
+      font-family: "Inter", sans-serif; font-size: .95rem; color: var(--gray-text); background: transparent;
+    }
+
+    .hero-search button {
+      background: var(--orange); color: var(--white); border: none;
+      padding: .9rem 1.5rem;
+      font-family: "Inter", sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; transition: background .2s; white-space: nowrap;
+    }
+
+    .hero-search button:hover    { background: #d9660f; }
+    .hero-search button:disabled { opacity: .55; cursor: default; }
+
+    /* ── Main ────────────────────────────────────────────────── */
+    .page-body { flex: 1; background: var(--gray-bg); }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+
+    /* ── Tab pills ───────────────────────────────────────────── */
+    .tab-pills { display: flex; gap: .5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+
+    .tab-btn {
+      background: var(--white);
+      border: 1.5px solid var(--gray-border);
+      border-radius: var(--radius-pill);
+      padding: .5rem 1.25rem;
+      font-family: "Inter", sans-serif; font-size: .88rem; font-weight: 600;
+      color: var(--gray-muted); cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+
+    .tab-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .tab-btn.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section heading ─────────────────────────────────────── */
+    .section-heading {
+      font-size: 1.05rem; font-weight: 700; color: var(--gray-text);
+      margin-bottom: 1.5rem; padding-bottom: .65rem;
+      border-bottom: 2px solid var(--gray-border);
+      display: flex; align-items: center; gap: .55rem;
+    }
+
+    .heading-icon {
+      width: 26px; height: 26px;
+      background: var(--blue-light); border-radius: 7px;
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* ── Search results ──────────────────────────────────────── */
+    .results-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .result-card {
+      background: var(--white); border-radius: var(--radius-card);
+      border-top: 3px solid var(--orange);
+      padding: 1.25rem 1.4rem; box-shadow: var(--shadow-md);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .result-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+    .card-header { display: flex; align-items: flex-start; gap: .75rem; margin-bottom: .6rem; }
+
+    .page-badge {
+      background: var(--blue-light); color: var(--blue);
+      font-size: .72rem; font-weight: 700; padding: .2rem .55rem;
+      border-radius: 6px; white-space: nowrap; flex-shrink: 0; margin-top: .15rem;
+    }
+
+    .doc-name   { font-size: .95rem; font-weight: 700; color: var(--blue); line-height: 1.3; }
+    .doc-excerpt { font-size: .88rem; color: var(--gray-muted); line-height: 1.65; margin-bottom: .9rem; }
+
+    .btn-ver {
+      display: inline-block; background: var(--orange); color: var(--white);
+      text-decoration: none; font-size: .82rem; font-weight: 600;
+      padding: .4rem .95rem; border-radius: var(--radius-btn);
+      transition: background .2s, transform .1s;
+    }
+
+    .btn-ver:hover  { background: #d9660f; }
+    .btn-ver:active { transform: translateY(1px); }
+    .page-hint { margin: 4px 0 0; font-size: .75rem; color: #888; }
+
+    mark { background: #FFF3CD; border-radius: 3px; padding: 0 2px; color: inherit; }
+
+    /* ── Example questions ───────────────────────────────────── */
+    .example-questions { margin-bottom: 1.25rem; }
+
+    .example-q-label {
+      font-size: .78rem; font-weight: 600; color: var(--gray-muted);
+      text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem;
+    }
+
+    .example-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+
+    .example-chip {
+      background: var(--blue-light); color: var(--blue);
+      border: 1.5px solid #C5D9F0; border-radius: var(--radius-pill);
+      padding: .35rem .9rem; font-size: .8rem; font-weight: 500;
+      cursor: pointer; font-family: "Inter", sans-serif;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+
+    .example-chip:hover { background: var(--blue); color: var(--white); border-color: var(--blue); }
+
+    /* ── Agent ───────────────────────────────────────────────── */
+    .agent-box { background: var(--white); border-radius: var(--radius-card); padding: 1.75rem; box-shadow: var(--shadow-md); }
+
+    .agent-box label {
+      display: block; font-size: .82rem; font-weight: 600; color: var(--gray-muted);
+      text-transform: uppercase; letter-spacing: .06em; margin-bottom: .6rem;
+    }
+
+    .agent-box textarea {
+      width: 100%; min-height: 110px; resize: vertical;
+      border: 1.5px solid var(--gray-border); border-radius: var(--radius-btn);
+      padding: .75rem 1rem; font-family: "Inter", sans-serif; font-size: .95rem;
+      color: var(--gray-text); outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .agent-box textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,87,168,.12); }
+
+    .agent-action { display: flex; justify-content: flex-end; margin-top: .9rem; }
+
+    .btn-primary {
+      background: var(--blue); color: var(--white); border: none;
+      border-radius: var(--radius-btn); padding: .65rem 1.4rem;
+      font-family: "Inter", sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .45rem;
+      transition: background .2s, transform .1s;
+    }
+
+    .btn-primary:hover    { background: var(--blue-dark); }
+    .btn-primary:active   { transform: translateY(1px); }
+    .btn-primary:disabled { opacity: .5; cursor: default; }
+
+    .loading { display: none; align-items: center; gap: .75rem; color: var(--gray-muted); font-size: .88rem; margin: 1.25rem 0; }
+    .loading.visible { display: flex; }
+
+    .dots span {
+      display: inline-block; width: 7px; height: 7px;
+      background: var(--blue); border-radius: 50%; animation: bounce 1.2s infinite;
+    }
+
+    .dots span:nth-child(2) { animation-delay: .2s; }
+    .dots span:nth-child(3) { animation-delay: .4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: .35; }
+      40%           { transform: translateY(-6px); opacity: 1; }
+    }
+
+    .agent-response { display: none; background: var(--white); border-radius: var(--radius-card); box-shadow: var(--shadow-md); margin-top: 1.25rem; overflow: hidden; }
+    .agent-response.visible { display: block; }
+
+    .response-header {
+      background: var(--blue); color: var(--white);
+      padding: .75rem 1.25rem; font-size: .8rem; font-weight: 600;
+      letter-spacing: .05em; text-transform: uppercase;
+      display: flex; align-items: center; gap: .5rem;
+    }
+
+    .response-body { padding: 1.5rem 1.75rem; font-size: .95rem; line-height: 1.75; color: var(--gray-text); white-space: pre-wrap; }
+
+    .sources-section { padding: 1rem 1.75rem 1.5rem; border-top: 1px solid var(--gray-border); }
+
+    .sources-section h3 {
+      font-size: .72rem; font-weight: 700; color: var(--gray-muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: .65rem;
+    }
+
+    .sources-chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: .35rem;
+      background: var(--orange-lt); color: var(--orange); border: 1px solid #FBCFA3;
+      border-radius: var(--radius-pill); padding: .3rem .85rem;
+      font-size: .78rem; font-weight: 600; text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+
+    .chip:hover { background: var(--orange); color: var(--white); }
+
+    /* ── Publications ────────────────────────────────────────── */
+    .volumes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .volume-card {
+      background: var(--white); border-radius: var(--radius-card);
+      border-left: 4px solid var(--blue);
+      padding: 1.2rem; box-shadow: var(--shadow-md);
+      display: flex; flex-direction: column; gap: .55rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .volume-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+    .vol-header { display: flex; align-items: flex-start; gap: .7rem; }
+
+    .vol-badge {
+      background: var(--blue); color: var(--white);
+      font-size: .68rem; font-weight: 700; padding: .22rem .55rem;
+      border-radius: 6px; white-space: nowrap; flex-shrink: 0; align-self: flex-start;
+      letter-spacing: .03em;
+    }
+
+    .vol-info { flex: 1; min-width: 0; }
+    .vol-title { font-size: .93rem; font-weight: 700; color: var(--blue); line-height: 1.3; }
+
+    .vol-meta {
+      display: flex; gap: .7rem; margin-top: .18rem;
+      font-size: .74rem; color: var(--gray-muted);
+    }
+
+    .vol-meta span { display: flex; align-items: center; gap: .2rem; }
+
+    .vol-desc { font-size: .83rem; color: var(--gray-muted); line-height: 1.55; flex: 1; }
+
+    .vol-actions { display: flex; align-items: center; gap: .5rem; margin-top: .2rem; flex-wrap: wrap; }
+
+    .btn-pdf {
+      background: var(--blue); color: var(--white); border: none;
+      border-radius: var(--radius-btn); padding: .36rem .85rem;
+      font-family: "Inter", sans-serif; font-size: .79rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .35rem;
+      transition: background .2s;
+    }
+
+    .btn-pdf:hover { background: var(--blue-dark); }
+
+    /* ── PDF Modal ───────────────────────────────────────────── */
+    .pdf-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.6); z-index: 200;
+      align-items: center; justify-content: center; padding: 1.5rem;
+    }
+
+    .pdf-modal.visible { display: flex; }
+
+    .pdf-modal-inner {
+      background: var(--white); border-radius: var(--radius-card);
+      width: 100%; max-width: 880px; height: min(88vh, 680px);
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+
+    .pdf-modal-header {
+      background: var(--blue); color: var(--white);
+      padding: .75rem 1.25rem;
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+
+    .pdf-modal-title { font-size: .9rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .btn-close-modal {
+      background: rgba(255,255,255,.15); border: none; color: var(--white);
+      cursor: pointer; font-size: 1rem; padding: .3rem .55rem; border-radius: 6px;
+      flex-shrink: 0; margin-left: 1rem; transition: background .15s;
+    }
+
+    .btn-close-modal:hover { background: rgba(255,255,255,.3); }
+
+    .pdf-modal-body { flex: 1; overflow: hidden; background: #525659; }
+    .pdf-modal-body iframe { width: 100%; height: 100%; border: none; }
+
+    .pdf-no-url {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; color: rgba(255,255,255,.75); gap: .75rem; text-align: center; padding: 2rem;
+    }
+
+    .pdf-no-url p         { font-size: .9rem; }
+    .pdf-no-url p + p     { font-size: .8rem; opacity: .65; }
+    .pdf-no-url code      { background: rgba(255,255,255,.12); border-radius: 4px; padding: .1em .4em; font-family: monospace; }
+
+    /* ── Statistics ──────────────────────────────────────────── */
+    .stats-summary {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.75rem;
+    }
+
+    .stat-card {
+      background: var(--white); border-radius: var(--radius-card);
+      padding: 1.25rem 1rem; box-shadow: var(--shadow-md);
+      text-align: center; border-top: 3px solid var(--blue);
+    }
+
+    .stat-number { font-size: 2rem; font-weight: 700; color: var(--blue); line-height: 1.1; }
+    .stat-label  { font-size: .74rem; color: var(--gray-muted); margin-top: .3rem; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+
+    .vol-stats-table { background: var(--white); border-radius: var(--radius-card); box-shadow: var(--shadow-md); overflow: hidden; }
+
+    .vol-stats-thead {
+      display: grid; grid-template-columns: 42px 1fr 90px 130px;
+      gap: .75rem; align-items: center; padding: .7rem 1.25rem;
+      background: var(--blue); color: var(--white);
+      font-size: .73rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    }
+
+    .vol-stats-row {
+      display: grid; grid-template-columns: 42px 1fr 90px 130px;
+      gap: .75rem; align-items: center; padding: .8rem 1.25rem;
+      border-bottom: 1px solid var(--gray-border);
+      transition: background .15s;
+    }
+
+    .vol-stats-row:last-child  { border-bottom: none; }
+    .vol-stats-row:nth-child(even) { background: var(--gray-bg); }
+    .vol-stats-row:hover       { background: var(--blue-light); }
+
+    .vsr-num {
+      background: var(--blue-light); color: var(--blue);
+      font-size: .73rem; font-weight: 700;
+      width: 28px; height: 28px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .vsr-name  { font-size: .87rem; font-weight: 600; color: var(--gray-text); line-height: 1.35; }
+    .vsr-count { font-size: .92rem; font-weight: 700; color: var(--blue); text-align: right; }
+
+    .vsr-bar-wrap { background: var(--blue-light); border-radius: 4px; height: 8px; overflow: hidden; }
+
+    .vsr-bar {
+      background: linear-gradient(90deg, var(--blue), var(--blue-dark));
+      height: 100%; border-radius: 4px; width: 0;
+      transition: width .75s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Empty / Error ───────────────────────────────────────── */
+    .empty-state { text-align: center; color: var(--gray-muted); font-size: .95rem; padding: 3rem 0; }
+    .empty-state svg { margin-bottom: .75rem; opacity: .3; }
+
+    .error-msg {
+      background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA;
+      border-radius: var(--radius-btn); padding: .75rem 1rem; font-size: .88rem;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    footer { background: var(--blue); padding: 1.25rem 1.5rem; text-align: center; }
+    footer p { color: rgba(255,255,255,.6); font-size: .78rem; letter-spacing: .05em; }
+    footer strong { color: rgba(255,255,255,.9); font-weight: 600; }
+
+    /* ── Home volumes grid ───────────────────────────────────── */
+    .header-logo-link { display: flex; align-items: center; flex-shrink: 0; }
+    .header-logo-link:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
+
+    .home-intro { margin-bottom: .5rem; }
+
+    .home-intro-label {
+      font-size: .78rem; font-weight: 700; color: var(--gray-muted);
+      text-transform: uppercase; letter-spacing: .07em;
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .6rem;
+    }
+
+    .home-intro-label::after { content: ''; flex: 1; height: 1px; background: var(--gray-border); }
+
+    .home-volumes-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: .75rem;
+    }
+
+    .home-vol-card {
+      background: var(--white); border-radius: var(--radius-card);
+      overflow: hidden; box-shadow: var(--shadow-md);
+      cursor: pointer; border: none; padding: 0;
+      text-align: left; font-family: "Inter", sans-serif;
+      position: relative; transition: transform .2s, box-shadow .2s;
+    }
+
+    .home-vol-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .home-vol-card:hover .home-vol-play { opacity: 1; }
+    .home-vol-card:hover .home-vol-thumb { transform: scale(1.04); }
+
+    .home-vol-thumb-wrap {
+      position: relative; width: 100%; aspect-ratio: 3/4;
+      background: var(--blue-light); overflow: hidden;
+    }
+
+    .home-vol-thumb {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .3s;
+    }
+
+    .home-vol-play {
+      position: absolute; inset: 0;
+      background: rgba(0,57,122,.45);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .2s;
+    }
+
+    .home-vol-num {
+      position: absolute; top: .4rem; left: .4rem;
+      background: var(--orange); color: var(--white);
+      font-size: .6rem; font-weight: 700;
+      padding: .14rem .42rem; border-radius: 4px; letter-spacing: .03em;
+    }
+
+    .home-vol-info { padding: .5rem .6rem .6rem; }
+
+    .home-vol-name {
+      font-size: .76rem; font-weight: 700; color: var(--blue); line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .home-vol-year { font-size: .67rem; color: var(--gray-muted); margin-top: .1rem; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 800px) {
+      .home-volumes-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .home-volumes-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .volumes-grid { grid-template-columns: 1fr; }
+      .stats-summary { grid-template-columns: 1fr; }
+      .vol-stats-thead, .vol-stats-row { grid-template-columns: 36px 1fr 72px; }
+      .vol-stats-thead > :last-child, .vol-stats-row > :last-child { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .hero-search { flex-direction: column; border-radius: var(--radius-card); }
+      .hero-search button { border-radius: 0 0 var(--radius-card) var(--radius-card); }
+      .header-divider { display: none; }
+      .pdf-modal { padding: .5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────── -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="header-logo-link" onclick="irAlHome(); return false;" aria-label="Ir al inicio">
+      <img
+        src="https://www.vectorlogo.es/wp-content/uploads/2017/02/logo-vector-escolapios-betania.jpg"
+        alt="Escolapios Betania"
+        class="header-logo"
+      />
+    </a>
+    <div class="header-divider"></div>
+    <div class="header-text">
+      <h1>Archivo Digital</h1>
+      <p>Provincia de Betania · Escuelas Pías</p>
+    </div>
+  </div>
+</header>
+
+<!-- ── Hero ───────────────────────────────────────────────────── -->
+<section class="hero">
+  <h2>Explora el conocimiento escolapio</h2>
+  <p>Busca en el fondo documental de la Provincia de Betania</p>
+  <div class="hero-search">
+    <input
+      type="text"
+      id="input-buscar"
+      placeholder="Busca por tema, documento, fecha…"
+      aria-label="Búsqueda en el archivo"
+      onkeydown="if(event.key==='Enter') ejecutarBusqueda()"
+    />
+    <button onclick="ejecutarBusqueda()" id="btn-buscar">Buscar</button>
+  </div>
+</section>
+
+<!-- ── Contenido ──────────────────────────────────────────────── -->
+<div class="page-body">
+<main>
+
+  <!-- Barra de navegación entre secciones -->
+  <div class="tab-pills" role="tablist">
+    <button class="tab-btn active" role="tab" aria-selected="true"
+            id="tab-buscar-btn" aria-controls="panel-buscar"
+            onclick="cambiarPestana('buscar')">
+      Resultados de búsqueda
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-consultar-btn" aria-controls="panel-consultar"
+            onclick="cambiarPestana('consultar')">
+      Consultar al archivero
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-publicaciones-btn" aria-controls="panel-publicaciones"
+            onclick="cambiarPestana('publicaciones')">
+      Publicaciones
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-estadisticas-btn" aria-controls="panel-estadisticas"
+            onclick="cambiarPestana('estadisticas')">
+      Estadísticas
+    </button>
+  </div>
+
+  <!-- Panel 1: Búsqueda simple -->
+  <section class="tab-panel active" id="panel-buscar" role="tabpanel">
+    <!-- Vista inicial: acceso rápido a los 10 volúmenes -->
+    <div class="home-intro" id="home-view">
+      <p class="home-intro-label">Opera Omnia · San José de Calasanz</p>
+      <div class="home-volumes-grid" id="home-volumes-grid"></div>
+    </div>
+    <!-- Resultados de búsqueda (oculto hasta que se busca) -->
+    <div id="resultados-busqueda" style="display:none"></div>
+  </section>
+
+  <!-- Panel 2: Agente -->
+  <section class="tab-panel" id="panel-consultar" role="tabpanel">
+
+    <!-- Botones de preguntas de ejemplo -->
+    <div class="example-questions">
+      <p class="example-q-label">Preguntas de ejemplo</p>
+      <div class="example-chips" id="example-chips-container"></div>
+    </div>
+
+    <div class="agent-box">
+      <label for="input-pregunta">Pregunta al archivero</label>
+      <textarea
+        id="input-pregunta"
+        placeholder="Haz una pregunta sobre los documentos de la provincia..."
+        aria-label="Pregunta al archivero"
+        onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)) ejecutarConsulta()"
+      ></textarea>
+      <div class="agent-action">
+        <button class="btn-primary" onclick="ejecutarConsulta()" id="btn-consultar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Consultar al archivero
+        </button>
+      </div>
+    </div>
+
+    <div class="loading" id="loading-agente" aria-live="polite">
+      <div class="dots" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      El archivero está consultando los documentos…
+    </div>
+
+    <div class="agent-response" id="respuesta-agente">
+      <div class="response-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Respuesta del archivero
+      </div>
+      <div class="response-body" id="texto-respuesta"></div>
+      <div class="sources-section" id="fuentes-seccion" style="display:none">
+        <h3>Documentos consultados</h3>
+        <div class="sources-chips" id="chips-fuentes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Panel 3: Publicaciones -->
+  <section class="tab-panel" id="panel-publicaciones" role="tabpanel">
+    <div class="section-heading">
+      <span class="heading-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </span>
+      Opera Omnia · San José de Calasanz
+    </div>
+    <div class="volumes-grid" id="volumes-grid"></div>
+  </section>
+
+  <!-- Panel 4: Estadísticas -->
+  <section class="tab-panel" id="panel-estadisticas" role="tabpanel">
+    <div class="section-heading">
+      <span class="heading-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+      </span>
+      Índice del fondo digitalizado
+    </div>
+
+    <div class="stats-summary" id="stats-summary"></div>
+
+    <div class="vol-stats-table">
+      <div class="vol-stats-thead">
+        <div>Vol.</div>
+        <div>Título</div>
+        <div style="text-align:right">Fragmentos</div>
+        <div>Cobertura relativa</div>
+      </div>
+      <div id="vol-stats-rows"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<!-- ── PDF Modal ──────────────────────────────────────────────── -->
+<div class="pdf-modal" id="pdf-modal" role="dialog" aria-modal="true"
+     aria-labelledby="pdf-modal-title-text"
+     onclick="if(event.target===this) cerrarPDF()">
+  <div class="pdf-modal-inner">
+    <div class="pdf-modal-header">
+      <span class="pdf-modal-title" id="pdf-modal-title-text">Visor de documentos</span>
+      <button class="btn-close-modal" onclick="cerrarPDF()" aria-label="Cerrar visor">✕</button>
+    </div>
+    <div class="pdf-modal-body" id="pdf-modal-body"></div>
+  </div>
+</div>
+
+<!-- ── Footer ─────────────────────────────────────────────────── -->
+<footer>
+  <p><strong>Provincia de Betania · Escuelas Pías</strong> · Archivo Digital</p>
+</footer>
+
+<script>
+  // ── Configuración ──────────────────────────────────────────────
+  const EDGE_BUSCAR    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-archivo";
+  const EDGE_CONSULTAR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-archivo";
+  const ANON_KEY       = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmemVtcHJrZ3hkcXpxeXFqdHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzE1NzEsImV4cCI6MjA5MjEwNzU3MX0.pyuNBBH6edmqqyCkwvbpvH3zQPCzH5UnQpW2soxGDi8";
+
+  const AUTH_HEADERS = {
+    "Content-Type":  "application/json",
+    "Authorization": `Bearer ${ANON_KEY}`,
+  };
+
+  // ── Opera Omnia ────────────────────────────────────────────────
+  const OPERA_OMNIA = [
+    {
+      vol: "I", titulo: "Constituciones Generales",
+      descripcion: "Las normas fundacionales de la Orden de las Escuelas Pías, con las reglas de vida común y la misión educativa, revisadas hasta 1645.",
+      anio: "1621", paginas: 342, chunks: 489, drive_id: "12KpZu9veDoBWg26cm3urwDbrdB7cBZj-",
+    },
+    {
+      vol: "II", titulo: "Escritos Espirituales y Pedagógicos",
+      descripcion: "Meditaciones, exhortaciones y tratados de Calasanz sobre la formación integral del niño y la vocación del maestro escolapio.",
+      anio: "c. 1615", paginas: 287, chunks: 398, drive_id: "1dv3RDf5mvpx-Gl_W9wxFoSH9TIaKRYuH",
+    },
+    {
+      vol: "III", titulo: "Epistolario I · 1600–1612",
+      descripcion: "Cartas de los primeros años romanos: fundación de las escuelas populares gratuitas y correspondencia con los primeros colaboradores.",
+      anio: "1600–1612", paginas: 456, chunks: 621, drive_id: "11DWqPLaQJTd16AmbNwcsXidkbeYu6ydf",
+    },
+    {
+      vol: "IV", titulo: "Epistolario II · 1613–1619",
+      descripcion: "Expansión por Toscana y Liguria; negociaciones con la Santa Sede para el reconocimiento canónico de la Orden.",
+      anio: "1613–1619", paginas: 421, chunks: 573, drive_id: "13o3Rq0VQ5mCVVIcm25kgQKzXT5V2p4YJ",
+    },
+    {
+      vol: "V", titulo: "Epistolario III · 1620–1625",
+      descripcion: "Elevación a Orden religiosa en 1621: organización interna, primeras Constituciones y apertura de colegios en Europa central.",
+      anio: "1620–1625", paginas: 478, chunks: 652, drive_id: "1TBsYnWeNq9HIKtibfqHpOyhSbVQVvdYk",
+    },
+    {
+      vol: "VI", titulo: "Epistolario IV · 1626–1630",
+      descripcion: "Consolidación de la Orden y primeras tensiones internas; correspondencia sobre formación de maestros y gratuidad de la enseñanza.",
+      anio: "1626–1630", paginas: 398, chunks: 541, drive_id: "1iW4h0P4HXzH4i-V0tmybQHfbZCafLVQB",
+    },
+    {
+      vol: "VII", titulo: "Epistolario V · 1631–1636",
+      descripcion: "Crisis interna provocada por Mario Sozzi; defensa del carisma educativo ante las presiones que amenazaban la estructura de la Orden.",
+      anio: "1631–1636", paginas: 387, chunks: 527, drive_id: "1xZjmcr8jccR-hV9Ans-ketRZlcmOZMy-",
+    },
+    {
+      vol: "VIII", titulo: "Epistolario VI · 1637–1641",
+      descripcion: "Proceso inquisitorial y degradación a congregación secular en 1646; cartas de sufrimiento y perseverancia de Calasanz.",
+      anio: "1637–1641", paginas: 412, chunks: 563, drive_id: "1H603yLn-0tAxjRIl4dyZv-ukkDdDEeJu",
+    },
+    {
+      vol: "IX", titulo: "Epistolario VII · 1642–1648",
+      descripcion: "Últimas cartas antes de su muerte (1648): consuelo a los religiosos, esperanza en la restauración futura y legado espiritual.",
+      anio: "1642–1648", paginas: 443, chunks: 604, drive_id: "1oj7o7nuq2NzKhpSZyzQcQezotkve3S93",
+    },
+    {
+      vol: "X", titulo: "Documentos, Actas y Memoriales",
+      descripcion: "Bulas pontificias, privilegios reales, actas capitulares y memoriales a la Santa Sede sobre la historia jurídica de la Orden.",
+      anio: "1617–1648", paginas: 325, chunks: 445, drive_id: "1vIxFSZdAi8Uw896rz70Jq6KpOLxvc2pA",
+    },
+  ];
+
+  // ── Preguntas de ejemplo ───────────────────────────────────────
+  const PREGUNTAS_EJEMPLO = [
+    "¿Qué decía Calasanz sobre la educación de los niños pobres?",
+    "¿Cuáles son los votos de los miembros de las Escuelas Pías?",
+    "¿Cómo organizaba Calasanz el día escolar?",
+    "¿Qué relación mantuvo Calasanz con la Inquisición?",
+    "¿Cuáles fueron las causas de la degradación de la Orden en 1646?",
+  ];
+
+  // ── Pestañas ───────────────────────────────────────────────────
+  function cambiarPestana(id) {
+    document.querySelectorAll(".tab-btn").forEach(b => {
+      const activa = b.id === `tab-${id}-btn`;
+      b.classList.toggle("active", activa);
+      b.setAttribute("aria-selected", activa);
+    });
+    document.querySelectorAll(".tab-panel").forEach(p => {
+      p.classList.toggle("active", p.id === `panel-${id}`);
+    });
+    if (id === "estadisticas") animarBarras();
+  }
+
+  // ── Utilidades ─────────────────────────────────────────────────
+  function escaparHTML(str) {
+    return String(str)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function escaparRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function resaltarTermino(texto, termino) {
+    if (!termino) return escaparHTML(texto);
+    const palabras = termino.trim().split(/\s+/).map(escaparRegex);
+    const regex    = new RegExp(`(${palabras.join("|")})`, "gi");
+    return escaparHTML(texto).replace(regex, "<mark>$1</mark>");
+  }
+
+  function truncar(texto, max = 55) {
+    const p = texto.split(/\s+/);
+    return p.length <= max ? texto : p.slice(0, max).join(" ") + "…";
+  }
+
+  // ── Búsqueda simple ────────────────────────────────────────────
+  async function ejecutarBusqueda() {
+    const query = document.getElementById("input-buscar").value.trim();
+    const btn   = document.getElementById("btn-buscar");
+    const cont  = document.getElementById("resultados-busqueda");
+
+    if (!query) return;
+
+    cambiarPestana("buscar");
+    document.getElementById("home-view").style.display = "none";
+    document.getElementById("resultados-busqueda").style.display = "block";
+    btn.disabled    = true;
+    btn.textContent = "Buscando…";
+    cont.innerHTML  = "";
+
+    try {
+      const resp = await fetch(EDGE_BUSCAR, {
+        method:  "POST",
+        headers: AUTH_HEADERS,
+        body:    JSON.stringify({ query }),
+      });
+
+      if (!resp.ok) throw new Error(`Error ${resp.status}`);
+      const { resultados, error } = await resp.json();
+      if (error) throw new Error(error);
+
+      if (!resultados || resultados.length === 0) {
+        cont.innerHTML = `<div class="empty-state"><p>No se encontraron resultados para "<strong>${escaparHTML(query)}</strong>".</p></div>`;
+        return;
+      }
+
+      const lista = document.createElement("div");
+      lista.className = "results-list";
+
+      for (const r of resultados) {
+        const card = document.createElement("article");
+        card.className = "result-card";
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="page-badge">Pág. ${r.pagina}</span>
+            <span class="doc-name">${escaparHTML(r.nombre_documento)}</span>
+          </div>
+          <p class="doc-excerpt">${resaltarTermino(truncar(r.contenido), query)}</p>
+          <a class="btn-ver" href="${escaparHTML(r.drive_url)}#page=${r.pagina}" target="_blank" rel="noopener">
+            Ver documento →
+          </a>
+          <p class="page-hint">Abre el PDF y ve a la página ${r.pagina}</p>`;
+        lista.appendChild(card);
+      }
+
+      cont.appendChild(lista);
+    } catch (e) {
+      cont.innerHTML = `<p class="error-msg">Error: ${escaparHTML(e.message)}</p>`;
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = "Buscar";
+    }
+  }
+
+  // ── Agente ─────────────────────────────────────────────────────
+  async function ejecutarConsulta() {
+    const pregunta   = document.getElementById("input-pregunta").value.trim();
+    const btn        = document.getElementById("btn-consultar");
+    const loading    = document.getElementById("loading-agente");
+    const respBox    = document.getElementById("respuesta-agente");
+    const textoEl    = document.getElementById("texto-respuesta");
+    const fuentesSec = document.getElementById("fuentes-seccion");
+    const chipsEl    = document.getElementById("chips-fuentes");
+
+    if (!pregunta) return;
+
+    btn.disabled = true;
+    loading.classList.add("visible");
+    respBox.classList.remove("visible");
+    textoEl.textContent      = "";
+    chipsEl.innerHTML        = "";
+    fuentesSec.style.display = "none";
+
+    try {
+      const resp = await fetch(EDGE_CONSULTAR, {
+        method:  "POST",
+        headers: AUTH_HEADERS,
+        body:    JSON.stringify({ pregunta }),
+      });
+
+      if (!resp.ok) throw new Error(`Error ${resp.status}`);
+      const { respuesta, fuentes, error } = await resp.json();
+      if (error) throw new Error(error);
+
+      textoEl.textContent = respuesta;
+      respBox.classList.add("visible");
+
+      if (fuentes && fuentes.length > 0) {
+        fuentesSec.style.display = "block";
+        for (const f of fuentes) {
+          const chip = document.createElement("a");
+          chip.className   = "chip";
+          chip.href        = f.drive_url;
+          chip.target      = "_blank";
+          chip.rel         = "noopener";
+          chip.textContent = `${f.nombre} · pág. ${f.pagina}`;
+          chipsEl.appendChild(chip);
+        }
+      }
+    } catch (e) {
+      textoEl.innerHTML = `<span style="color:#991B1B">Error: ${escaparHTML(e.message)}</span>`;
+      respBox.classList.add("visible");
+    } finally {
+      btn.disabled = false;
+      loading.classList.remove("visible");
+    }
+  }
+
+  // ── Preguntas de ejemplo ───────────────────────────────────────
+  function usarPregunta(texto) {
+    document.getElementById("input-pregunta").value = texto;
+    document.getElementById("input-pregunta").focus();
+  }
+
+  function initEjemplos() {
+    const container = document.getElementById("example-chips-container");
+    for (const q of PREGUNTAS_EJEMPLO) {
+      const btn = document.createElement("button");
+      btn.className   = "example-chip";
+      btn.textContent = q;
+      btn.addEventListener("click", () => usarPregunta(q));
+      container.appendChild(btn);
+    }
+  }
+
+  // ── Visor PDF ──────────────────────────────────────────────────
+  function verPDF(driveId, titulo) {
+    const modal = document.getElementById("pdf-modal");
+    const body  = document.getElementById("pdf-modal-body");
+    const title = document.getElementById("pdf-modal-title-text");
+
+    title.textContent = titulo;
+    body.innerHTML    = "";
+
+    if (driveId) {
+      const iframe = document.createElement("iframe");
+      iframe.src   = `https://drive.google.com/file/d/${driveId}/preview`;
+      iframe.title = titulo;
+      iframe.allow = "autoplay";
+      body.appendChild(iframe);
+    } else {
+      body.innerHTML = `
+        <div class="pdf-no-url">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          <p>PDF pendiente de vinculación en Google Drive</p>
+          <p>Actualiza el campo <code>drive_id</code> en el array <code>OPERA_OMNIA</code></p>
+        </div>`;
+    }
+
+    modal.classList.add("visible");
+    document.body.style.overflow = "hidden";
+  }
+
+  function cerrarPDF() {
+    document.getElementById("pdf-modal").classList.remove("visible");
+    document.getElementById("pdf-modal-body").innerHTML = "";
+    document.body.style.overflow = "";
+  }
+
+  document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarPDF(); });
+
+  // ── Ir al home ─────────────────────────────────────────────────
+  function irAlHome() {
+    document.getElementById("input-buscar").value = "";
+    document.getElementById("resultados-busqueda").innerHTML = "";
+    document.getElementById("resultados-busqueda").style.display = "none";
+    document.getElementById("home-view").style.display = "block";
+    cambiarPestana("buscar");
+  }
+
+  // ── Renderizar miniaturas home ─────────────────────────────────
+  function renderHomeVolumes() {
+    const grid = document.getElementById("home-volumes-grid");
+    grid.innerHTML = "";
+
+    for (const v of OPERA_OMNIA) {
+      const card = document.createElement("button");
+      card.className = "home-vol-card";
+      card.setAttribute("aria-label", `Ver PDF Vol. ${v.vol} · ${v.titulo}`);
+      card.innerHTML = `
+        <div class="home-vol-thumb-wrap">
+          <img class="home-vol-thumb"
+               src="https://drive.google.com/thumbnail?id=${v.drive_id}&sz=w400"
+               alt="Portada Vol. ${escaparHTML(v.vol)}"
+               onerror="this.style.display='none'" />
+          <span class="home-vol-num">Vol. ${escaparHTML(v.vol)}</span>
+          <div class="home-vol-play" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="white" stroke="none">
+              <polygon points="5,3 19,12 5,21"/>
+            </svg>
+          </div>
+        </div>
+        <div class="home-vol-info">
+          <div class="home-vol-name">${escaparHTML(v.titulo)}</div>
+          <div class="home-vol-year">${escaparHTML(v.anio)}</div>
+        </div>`;
+      card.addEventListener("click", () => {
+        cambiarPestana("publicaciones");
+        verPDF(v.drive_id, `Vol. ${v.vol} · ${v.titulo}`);
+      });
+      grid.appendChild(card);
+    }
+  }
+
+  // ── Renderizar Publicaciones ───────────────────────────────────
+  function renderPublicaciones() {
+    const grid = document.getElementById("volumes-grid");
+    grid.innerHTML = "";
+
+    for (const v of OPERA_OMNIA) {
+      const card = document.createElement("article");
+      card.className = "volume-card";
+      card.innerHTML = `
+        <div class="vol-header">
+          <span class="vol-badge">Vol. ${escaparHTML(v.vol)}</span>
+          <div class="vol-info">
+            <div class="vol-title">${escaparHTML(v.titulo)}</div>
+            <div class="vol-meta">
+              <span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                ${escaparHTML(v.anio)}
+              </span>
+              <span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                ${v.paginas} págs.
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="vol-desc">${escaparHTML(v.descripcion)}</p>
+        <div class="vol-actions">
+          <button class="btn-pdf">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            Ver PDF
+          </button>
+        </div>`;
+      card.querySelector(".btn-pdf").addEventListener("click", () =>
+        verPDF(v.drive_id, `Vol. ${v.vol} · ${v.titulo}`)
+      );
+      grid.appendChild(card);
+    }
+  }
+
+  // ── Renderizar Estadísticas ────────────────────────────────────
+  function renderEstadisticas() {
+    const totalChunks = OPERA_OMNIA.reduce((a, v) => a + v.chunks, 0);
+    const totalPages  = OPERA_OMNIA.reduce((a, v) => a + v.paginas, 0);
+    const totalVols   = OPERA_OMNIA.length;
+
+    document.getElementById("stats-summary").innerHTML = `
+      <div class="stat-card">
+        <div class="stat-number">${totalVols}</div>
+        <div class="stat-label">Volúmenes indexados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">${totalPages.toLocaleString("es")}</div>
+        <div class="stat-label">Páginas digitalizadas</div>
+      </div>
+      <div class="stat-card" style="border-top-color:var(--orange)">
+        <div class="stat-number" style="color:var(--orange)">${totalChunks.toLocaleString("es")}</div>
+        <div class="stat-label">Fragmentos indexados</div>
+      </div>`;
+
+    const maxChunks = Math.max(...OPERA_OMNIA.map(v => v.chunks));
+    const rows = document.getElementById("vol-stats-rows");
+    rows.innerHTML = "";
+
+    for (const v of OPERA_OMNIA) {
+      const pct = Math.round((v.chunks / maxChunks) * 100);
+      const row = document.createElement("div");
+      row.className = "vol-stats-row";
+      row.innerHTML = `
+        <div class="vsr-num">${escaparHTML(v.vol)}</div>
+        <div class="vsr-name">${escaparHTML(v.titulo)}</div>
+        <div class="vsr-count">${v.chunks.toLocaleString("es")}</div>
+        <div class="vsr-bar-wrap">
+          <div class="vsr-bar" data-pct="${pct}"></div>
+        </div>`;
+      rows.appendChild(row);
+    }
+  }
+
+  // ── Animar barras de estadísticas ──────────────────────────────
+  function animarBarras() {
+    requestAnimationFrame(() => {
+      document.querySelectorAll(".vsr-bar").forEach(bar => {
+        bar.style.width = bar.dataset.pct + "%";
+      });
+    });
+  }
+
+  // ── Init ───────────────────────────────────────────────────────
+  document.addEventListener("DOMContentLoaded", () => {
+    renderPublicaciones();
+    renderHomeVolumes();
+    renderEstadisticas();
+    initEjemplos();
+  });
+</script>
+</body>
+</html>

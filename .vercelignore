@@ -1,0 +1,7 @@
+credentials.json
+*.py
+*.sql
+*.exe
+supabase
+README.md
+.vercel

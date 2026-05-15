@@ -1,0 +1,26 @@
+# Credenciales y secretos
+credentials.json
+.env
+.env.*
+*.env
+
+# Ejecutable Supabase local
+supabase.exe
+
+# Vercel
+.vercel
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Supabase CLI temp files
+supabase/.temp/
