@@ -655,6 +655,115 @@
 
     .fundador-chip:hover { background: var(--sepia); color: var(--white); }
 
+    /* ── Informes temáticos ──────────────────────────────────── */
+    .informe-form {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 1.5rem 1.75rem;
+    }
+
+    .informe-form label {
+      display: block; font-size: .8rem; font-weight: 700;
+      color: var(--gray-muted); text-transform: uppercase;
+      letter-spacing: .08em; margin-bottom: .5rem;
+    }
+
+    .informe-form input[type="text"] {
+      width: 100%; box-sizing: border-box;
+      border: 1.5px solid var(--border); border-radius: var(--radius-card);
+      padding: .75rem 1rem; font-family: "Inter", sans-serif;
+      font-size: .93rem; color: var(--gray-text); outline: none;
+      transition: border-color .2s;
+    }
+
+    .informe-form input[type="text"]:focus { border-color: var(--primary); }
+
+    .formato-group {
+      display: flex; align-items: center; gap: .45rem;
+      margin: 1rem 0 1.25rem; flex-wrap: wrap;
+    }
+
+    .formato-label {
+      font-size: .75rem; color: var(--gray-muted); font-weight: 600;
+      text-transform: uppercase; letter-spacing: .08em; margin-right: .1rem;
+    }
+
+    .formato-chip {
+      background: var(--white); color: var(--gray-muted);
+      border: 1.5px solid var(--border); border-radius: var(--radius-pill);
+      padding: .26rem .8rem; font-size: .78rem; font-weight: 600;
+      cursor: pointer; transition: all .18s;
+    }
+
+    .formato-chip.active {
+      background: var(--primary); color: var(--white); border-color: var(--primary);
+    }
+
+    .formato-chip:hover:not(.active) {
+      border-color: var(--primary); color: var(--primary);
+    }
+
+    .informe-result {
+      display: none; background: var(--white);
+      border: 1px solid var(--border); border-radius: var(--radius-card);
+      padding: 1.75rem 2rem; margin-top: 1.5rem;
+    }
+
+    .informe-result.visible { display: block; }
+
+    .informe-toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.5rem; padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .informe-badge {
+      font-size: .72rem; font-weight: 700; color: var(--primary);
+      text-transform: uppercase; letter-spacing: .09em;
+      background: rgba(37,99,235,.08); padding: .2rem .65rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .btn-descargar {
+      background: transparent; color: var(--primary);
+      border: 1.5px solid var(--primary); border-radius: var(--radius-pill);
+      padding: .32rem 1rem; font-size: .8rem; font-weight: 600;
+      cursor: pointer; transition: all .18s; display: flex;
+      align-items: center; gap: .35rem;
+    }
+
+    .btn-descargar:hover { background: var(--primary); color: var(--white); }
+
+    .informe-body h1 {
+      font-size: 1.3rem; font-weight: 800; margin: 0 0 1.25rem;
+      color: var(--gray-text); line-height: 1.25;
+    }
+
+    .informe-body h2 {
+      font-size: 1rem; font-weight: 700; margin: 1.6rem 0 .55rem;
+      color: var(--primary); text-transform: uppercase;
+      letter-spacing: .05em; font-size: .82rem;
+    }
+
+    .informe-body h3 {
+      font-size: .95rem; font-weight: 700; margin: 1.1rem 0 .45rem;
+      color: var(--gray-text);
+    }
+
+    .informe-body p {
+      font-size: .9rem; line-height: 1.75; margin: 0 0 .85rem;
+      color: var(--gray-text);
+    }
+
+    .informe-body ul { padding-left: 1.3rem; margin: 0 0 .9rem; }
+
+    .informe-body li {
+      font-size: .9rem; line-height: 1.7; margin-bottom: .3rem;
+      color: var(--gray-text);
+    }
+
+    .informe-body strong { font-weight: 700; color: #111827; }
+    .informe-body em     { font-style: italic; color: #374151; }
+
     /* ── Responsive ──────────────────────────────────────────── */
     @media (max-width: 800px) {
       .home-volumes-grid { grid-template-columns: repeat(3, 1fr); }
@@ -737,6 +846,11 @@
             id="tab-consultar-btn" aria-controls="panel-consultar"
             onclick="cambiarPestana('consultar')">
       Consultar al archivero
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-informes-btn" aria-controls="panel-informes"
+            onclick="cambiarPestana('informes')">
+      Informes temáticos
     </button>
     <button class="tab-btn" role="tab" aria-selected="false"
             id="tab-publicaciones-btn" aria-controls="panel-publicaciones"
@@ -877,6 +991,64 @@
     </div>
   </section>
 
+  <!-- Panel: Informes temáticos -->
+  <section class="tab-panel" id="panel-informes" role="tabpanel">
+
+    <div class="informe-form">
+      <label for="input-tema">Tema del informe</label>
+      <input
+        type="text"
+        id="input-tema"
+        placeholder="Ej: La educación gratuita de los niños pobres según Calasanz"
+        aria-label="Tema del informe"
+        onkeydown="if(event.key==='Enter') ejecutarInforme()"
+      />
+
+      <div class="formato-group">
+        <span class="formato-label">Profundidad:</span>
+        <button class="formato-chip" data-formato="resumen"   onclick="seleccionarFormato('resumen')">Resumen</button>
+        <button class="formato-chip active" data-formato="detallado"  onclick="seleccionarFormato('detallado')">Detallado</button>
+        <button class="formato-chip" data-formato="academico" onclick="seleccionarFormato('academico')">Académico</button>
+      </div>
+
+      <div class="agent-action">
+        <button class="btn-primary" id="btn-informe" onclick="ejecutarInforme()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          Generar informe
+        </button>
+      </div>
+    </div>
+
+    <div class="loading" id="loading-informe" aria-live="polite">
+      <div class="dots" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      Buscando en el archivo y sintetizando el informe… (puede tardar 20–30 s)
+    </div>
+
+    <div class="informe-result" id="resultado-informe">
+      <div class="informe-toolbar">
+        <span class="informe-badge">Informe generado</span>
+        <button class="btn-descargar" id="btn-descargar" onclick="descargarInforme()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Descargar .md
+        </button>
+      </div>
+      <div class="informe-body" id="cuerpo-informe"></div>
+    </div>
+
+  </section>
+
   <!-- Panel 3: Publicaciones -->
   <section class="tab-panel" id="panel-publicaciones" role="tabpanel">
     <div class="section-heading">
@@ -940,6 +1112,7 @@
   const EDGE_BUSCAR    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-archivo";
   const EDGE_CONSULTAR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-archivo";
   const EDGE_FUNDADOR  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-fundador";
+  const EDGE_INFORME   = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/generar-informe";
   const ANON_KEY       = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmemVtcHJrZ3hkcXpxeXFqdHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzE1NzEsImV4cCI6MjA5MjEwNzU3MX0.pyuNBBH6edmqqyCkwvbpvH3zQPCzH5UnQpW2soxGDi8";
 
   const AUTH_HEADERS = {
@@ -1009,6 +1182,113 @@
     "¿Qué sientes cuando ves que tus religiosos se apartan de la misión?",
     "¿Cuál es el fundamento espiritual de las Escuelas Pías?",
   ];
+
+  // ── Informes temáticos ─────────────────────────────────────────
+  let formatoActivo   = "detallado";
+  let ultimoInformeMd = "";
+  let ultimoInformeTema = "";
+
+  function seleccionarFormato(formato) {
+    formatoActivo = formato;
+    document.querySelectorAll(".formato-chip").forEach(c => {
+      c.classList.toggle("active", c.dataset.formato === formato);
+    });
+  }
+
+  async function ejecutarInforme() {
+    const tema      = document.getElementById("input-tema").value.trim();
+    const btn       = document.getElementById("btn-informe");
+    const loading   = document.getElementById("loading-informe");
+    const resultBox = document.getElementById("resultado-informe");
+    const cuerpo    = document.getElementById("cuerpo-informe");
+
+    if (!tema) return;
+
+    btn.disabled = true;
+    loading.classList.add("visible");
+    resultBox.classList.remove("visible");
+    cuerpo.innerHTML = "";
+
+    try {
+      const resp = await fetch(EDGE_INFORME, {
+        method:  "POST",
+        headers: AUTH_HEADERS,
+        body:    JSON.stringify({ tema, formato: formatoActivo }),
+      });
+
+      if (!resp.ok) throw new Error(`Error ${resp.status}`);
+      const { informe, error } = await resp.json();
+      if (error) throw new Error(error);
+
+      ultimoInformeMd   = informe;
+      ultimoInformeTema = tema;
+      cuerpo.innerHTML  = markdownAHtml(informe);
+      resultBox.classList.add("visible");
+    } catch (e) {
+      cuerpo.innerHTML = `<p style="color:#991B1B">Error: ${escaparHTML(e.message)}</p>`;
+      resultBox.classList.add("visible");
+    } finally {
+      btn.disabled = false;
+      loading.classList.remove("visible");
+    }
+  }
+
+  function descargarInforme() {
+    if (!ultimoInformeMd) return;
+    const blob = new Blob([ultimoInformeMd], { type: "text/plain;charset=utf-8" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = `informe-calasanz-${ultimoInformeTema.slice(0, 40)
+      .replace(/\s+/g, "-").replace(/[^a-z0-9-]/gi, "").toLowerCase()}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function markdownAHtml(md) {
+    const lines = md.split("\n");
+    let html = "";
+    let inList = false;
+    let inParagraph = false;
+
+    const inline = (s) => s
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g,     "<em>$1</em>");
+
+    for (const raw of lines) {
+      const line = inline(raw);
+      if (/^# /.test(raw)) {
+        if (inList) { html += "</ul>"; inList = false; }
+        if (inParagraph) { html += "</p>"; inParagraph = false; }
+        html += `<h1>${line.slice(2)}</h1>`;
+      } else if (/^## /.test(raw)) {
+        if (inList) { html += "</ul>"; inList = false; }
+        if (inParagraph) { html += "</p>"; inParagraph = false; }
+        html += `<h2>${line.slice(3)}</h2>`;
+      } else if (/^### /.test(raw)) {
+        if (inList) { html += "</ul>"; inList = false; }
+        if (inParagraph) { html += "</p>"; inParagraph = false; }
+        html += `<h3>${line.slice(4)}</h3>`;
+      } else if (/^- /.test(raw)) {
+        if (inParagraph) { html += "</p>"; inParagraph = false; }
+        if (!inList) { html += "<ul>"; inList = true; }
+        html += `<li>${line.slice(2)}</li>`;
+      } else if (raw.trim() === "") {
+        if (inList) { html += "</ul>"; inList = false; }
+        if (inParagraph) { html += "</p>"; inParagraph = false; }
+      } else {
+        if (inList) { html += "</ul>"; inList = false; }
+        if (!inParagraph) { html += "<p>"; inParagraph = true; }
+        else { html += " "; }
+        html += line;
+      }
+    }
+    if (inList) html += "</ul>";
+    if (inParagraph) html += "</p>";
+    return html;
+  }
 
   // ── Preguntas de ejemplo ───────────────────────────────────────
   const PREGUNTAS_EJEMPLO = [
