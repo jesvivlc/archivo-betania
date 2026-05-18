@@ -502,6 +502,134 @@
 
     .home-vol-year { font-size: .67rem; color: var(--gray-muted); margin-top: .1rem; }
 
+    /* ── Modo Fundador ───────────────────────────────────────── */
+    :root {
+      --sepia:        #7B5E2A;
+      --sepia-dark:   #5C3D0F;
+      --sepia-light:  #FEF9EE;
+      --sepia-border: #DDD0A8;
+      --sepia-muted:  #9C7A3A;
+    }
+
+    .tab-btn--fundador.active { background: var(--sepia); border-color: var(--sepia); }
+    .tab-btn--fundador:hover  { border-color: var(--sepia); color: var(--sepia); }
+
+    .fundador-intro {
+      background: linear-gradient(135deg, var(--sepia) 0%, var(--sepia-dark) 100%);
+      border-radius: var(--radius-card);
+      padding: 1.1rem 1.4rem;
+      color: var(--white);
+      margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 1.1rem;
+    }
+
+    .fundador-intro-icon {
+      width: 48px; height: 48px; flex-shrink: 0;
+      background: rgba(255,255,255,.15); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .fundador-intro-text h3 { font-size: .97rem; font-weight: 700; line-height: 1.2; }
+    .fundador-intro-text p  { font-size: .79rem; opacity: .8; margin-top: .2rem; line-height: 1.5; }
+
+    .fundador-agent-box {
+      background: var(--sepia-light);
+      border: 1.5px solid var(--sepia-border);
+      border-radius: var(--radius-card);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .fundador-agent-box label {
+      display: block; font-size: .82rem; font-weight: 600;
+      color: var(--sepia-muted); text-transform: uppercase;
+      letter-spacing: .06em; margin-bottom: .6rem;
+    }
+
+    .fundador-agent-box textarea {
+      width: 100%; min-height: 100px; resize: vertical;
+      border: 1.5px solid var(--sepia-border);
+      border-radius: var(--radius-btn);
+      padding: .75rem 1rem; font-family: "Inter", sans-serif;
+      font-size: .95rem; color: var(--gray-text); outline: none;
+      background: var(--white);
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .fundador-agent-box textarea:focus {
+      border-color: var(--sepia);
+      box-shadow: 0 0 0 3px rgba(123,94,42,.12);
+    }
+
+    .btn-fundador {
+      background: var(--sepia); color: var(--white); border: none;
+      border-radius: var(--radius-btn); padding: .65rem 1.4rem;
+      font-family: "Inter", sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .45rem;
+      transition: background .2s, transform .1s;
+    }
+
+    .btn-fundador:hover    { background: var(--sepia-dark); }
+    .btn-fundador:active   { transform: translateY(1px); }
+    .btn-fundador:disabled { opacity: .5; cursor: default; }
+
+    .fundador-example-chip {
+      background: rgba(123,94,42,.1); color: var(--sepia);
+      border: 1.5px solid var(--sepia-border); border-radius: var(--radius-pill);
+      padding: .35rem .9rem; font-size: .8rem; font-weight: 500;
+      cursor: pointer; font-family: "Inter", sans-serif;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+
+    .fundador-example-chip:hover {
+      background: var(--sepia); color: var(--white); border-color: var(--sepia);
+    }
+
+    .fundador-response {
+      display: none;
+      background: var(--sepia-light);
+      border: 1px solid var(--sepia-border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-md);
+      margin-top: 1.25rem; overflow: hidden;
+    }
+
+    .fundador-response.visible { display: block; }
+
+    .fundador-response-header {
+      background: linear-gradient(135deg, var(--sepia) 0%, var(--sepia-dark) 100%);
+      color: var(--white);
+      padding: .75rem 1.25rem; font-size: .8rem; font-weight: 600;
+      letter-spacing: .05em; text-transform: uppercase;
+      display: flex; align-items: center; gap: .5rem;
+    }
+
+    .fundador-response-body {
+      padding: 1.5rem 1.75rem;
+      font-size: .95rem; line-height: 1.85;
+      color: #3D2B1F; white-space: pre-wrap;
+    }
+
+    .fundador-sources {
+      padding: 1rem 1.75rem 1.4rem;
+      border-top: 1px solid var(--sepia-border);
+    }
+
+    .fundador-sources h3 {
+      font-size: .72rem; font-weight: 700; color: var(--sepia-muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: .65rem;
+    }
+
+    .fundador-chip {
+      display: inline-flex; align-items: center; gap: .35rem;
+      background: rgba(123,94,42,.1); color: var(--sepia);
+      border: 1px solid var(--sepia-border); border-radius: var(--radius-pill);
+      padding: .3rem .85rem; font-size: .78rem; font-weight: 600;
+      text-decoration: none; transition: background .2s, color .2s;
+    }
+
+    .fundador-chip:hover { background: var(--sepia); color: var(--white); }
+
     /* ── Responsive ──────────────────────────────────────────── */
     @media (max-width: 800px) {
       .home-volumes-grid { grid-template-columns: repeat(3, 1fr); }
@@ -588,6 +716,11 @@
             onclick="cambiarPestana('estadisticas')">
       Estadísticas
     </button>
+    <button class="tab-btn tab-btn--fundador" role="tab" aria-selected="false"
+            id="tab-fundador-btn" aria-controls="panel-fundador"
+            onclick="cambiarPestana('fundador')">
+      ✦ El Fundador
+    </button>
   </div>
 
   <!-- Panel 1: Búsqueda simple -->
@@ -646,6 +779,68 @@
       <div class="sources-section" id="fuentes-seccion" style="display:none">
         <h3>Documentos consultados</h3>
         <div class="sources-chips" id="chips-fuentes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Panel: El Fundador -->
+  <section class="tab-panel" id="panel-fundador" role="tabpanel">
+
+    <div class="fundador-intro">
+      <div class="fundador-intro-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
+          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+      </div>
+      <div class="fundador-intro-text">
+        <h3>José de Calasanz · 1557–1648</h3>
+        <p>Habla en primera persona desde sus cartas y escritos históricos. Solo afirma lo que está en sus documentos.</p>
+      </div>
+    </div>
+
+    <div class="example-questions" style="margin-bottom:1.25rem">
+      <p class="example-q-label" style="color:var(--sepia-muted)">Pregúntale directamente</p>
+      <div class="example-chips" id="fundador-chips-container"></div>
+    </div>
+
+    <div class="fundador-agent-box">
+      <label for="input-fundador">Tu pregunta a Calasanz</label>
+      <textarea
+        id="input-fundador"
+        placeholder="¿Qué te llevó a fundar las primeras escuelas gratuitas?…"
+        aria-label="Pregunta a Calasanz"
+        onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)) ejecutarFundador()"
+      ></textarea>
+      <div class="agent-action">
+        <button class="btn-fundador" onclick="ejecutarFundador()" id="btn-fundador">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          Preguntar al Fundador
+        </button>
+      </div>
+    </div>
+
+    <div class="loading" id="loading-fundador" aria-live="polite">
+      <div class="dots" aria-hidden="true">
+        <span style="background:var(--sepia)"></span>
+        <span style="background:var(--sepia)"></span>
+        <span style="background:var(--sepia)"></span>
+      </div>
+      Calasanz está buscando en sus escritos…
+    </div>
+
+    <div class="fundador-response" id="respuesta-fundador">
+      <div class="fundador-response-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+        Respuesta de José de Calasanz
+      </div>
+      <div class="fundador-response-body" id="texto-fundador"></div>
+      <div class="fundador-sources" id="fuentes-fundador-seccion" style="display:none">
+        <h3>Escritos consultados</h3>
+        <div class="sources-chips" id="chips-fuentes-fundador"></div>
       </div>
     </div>
   </section>
@@ -712,6 +907,7 @@
   // ── Configuración ──────────────────────────────────────────────
   const EDGE_BUSCAR    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-archivo";
   const EDGE_CONSULTAR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-archivo";
+  const EDGE_FUNDADOR  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-fundador";
   const ANON_KEY       = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmemVtcHJrZ3hkcXpxeXFqdHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzE1NzEsImV4cCI6MjA5MjEwNzU3MX0.pyuNBBH6edmqqyCkwvbpvH3zQPCzH5UnQpW2soxGDi8";
 
   const AUTH_HEADERS = {
@@ -771,6 +967,15 @@
       descripcion: "Bulas pontificias, privilegios reales, actas capitulares y memoriales a la Santa Sede sobre la historia jurídica de la Orden.",
       anio: "1617–1648", paginas: 325, chunks: 445, drive_id: "1vIxFSZdAi8Uw896rz70Jq6KpOLxvc2pA",
     },
+  ];
+
+  // ── Preguntas para el Fundador ─────────────────────────────────
+  const PREGUNTAS_FUNDADOR = [
+    "¿Por qué decidiste abrir escuelas gratuitas para los niños pobres?",
+    "¿Cómo sobreviviste a la persecución y la degradación de la Orden?",
+    "¿Qué virtudes debe tener un buen maestro escolapio?",
+    "¿Qué sientes cuando ves que tus religiosos se apartan de la misión?",
+    "¿Cuál es el fundamento espiritual de las Escuelas Pías?",
   ];
 
   // ── Preguntas de ejemplo ───────────────────────────────────────
@@ -995,6 +1200,74 @@
     cambiarPestana("buscar");
   }
 
+  // ── Agente Fundador ────────────────────────────────────────────
+  async function ejecutarFundador() {
+    const pregunta   = document.getElementById("input-fundador").value.trim();
+    const btn        = document.getElementById("btn-fundador");
+    const loading    = document.getElementById("loading-fundador");
+    const respBox    = document.getElementById("respuesta-fundador");
+    const textoEl    = document.getElementById("texto-fundador");
+    const fuentesSec = document.getElementById("fuentes-fundador-seccion");
+    const chipsEl    = document.getElementById("chips-fuentes-fundador");
+
+    if (!pregunta) return;
+
+    btn.disabled = true;
+    loading.classList.add("visible");
+    respBox.classList.remove("visible");
+    textoEl.textContent      = "";
+    chipsEl.innerHTML        = "";
+    fuentesSec.style.display = "none";
+
+    try {
+      const resp = await fetch(EDGE_FUNDADOR, {
+        method:  "POST",
+        headers: AUTH_HEADERS,
+        body:    JSON.stringify({ pregunta }),
+      });
+
+      if (!resp.ok) throw new Error(`Error ${resp.status}`);
+      const { respuesta, fuentes, error } = await resp.json();
+      if (error) throw new Error(error);
+
+      textoEl.textContent = respuesta;
+      respBox.classList.add("visible");
+
+      if (fuentes && fuentes.length > 0) {
+        fuentesSec.style.display = "block";
+        for (const f of fuentes) {
+          const chip = document.createElement("a");
+          chip.className   = "fundador-chip";
+          chip.href        = f.drive_url;
+          chip.target      = "_blank";
+          chip.rel         = "noopener";
+          chip.textContent = `${f.nombre} · pág. ${f.pagina}`;
+          chipsEl.appendChild(chip);
+        }
+      }
+    } catch (e) {
+      textoEl.innerHTML = `<span style="color:#991B1B">Error: ${escaparHTML(e.message)}</span>`;
+      respBox.classList.add("visible");
+    } finally {
+      btn.disabled = false;
+      loading.classList.remove("visible");
+    }
+  }
+
+  function initEjemplosFundador() {
+    const container = document.getElementById("fundador-chips-container");
+    for (const q of PREGUNTAS_FUNDADOR) {
+      const btn = document.createElement("button");
+      btn.className   = "fundador-example-chip";
+      btn.textContent = q;
+      btn.addEventListener("click", () => {
+        document.getElementById("input-fundador").value = q;
+        document.getElementById("input-fundador").focus();
+      });
+      container.appendChild(btn);
+    }
+  }
+
   // ── Renderizar miniaturas home ─────────────────────────────────
   function renderHomeVolumes() {
     const grid = document.getElementById("home-volumes-grid");
@@ -1128,6 +1401,7 @@
     renderHomeVolumes();
     renderEstadisticas();
     initEjemplos();
+    initEjemplosFundador();
   });
 </script>
 </body>
