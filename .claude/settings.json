@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -NonInteractive -File \"${CLAUDE_PROJECT_DIR}/.claude/hooks/mark-needs-update.ps1\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -NonInteractive -File \"${CLAUDE_PROJECT_DIR}/.claude/hooks/check-update.ps1\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

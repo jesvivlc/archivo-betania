@@ -24,3 +24,6 @@ Thumbs.db
 
 # Supabase CLI temp files
 supabase/.temp/
+
+# Claude Code hooks — flag de estado interno (no versionar)
+.claude/needs-update
