@@ -21,7 +21,7 @@ Usuarios: investigadores, religiosos escolapios, docentes, estudiantes de histor
 ┌─────────────────────────────────────────────────────────┐
 │  index.html  (Vercel · sitio estático · sin build step) │
 │                                                         │
-│  Pestañas: Búsqueda · Consultar · ✦ El Fundador ·       │
+│  Pestañas: Búsqueda · Consultar · ✦ Pregunta a Calasanz │
 │            Publicaciones · Estadísticas                 │
 │  Home: grid de miniaturas Drive → abre visor PDF        │
 └────────────────┬────────────────────────────────────────┘
@@ -106,7 +106,7 @@ para recuperar y sintetizar fragmentos históricos. Pro no aporta calidad
 apreciable para este caso de uso con el coste adicional.
 
 **Modo Fundador: persona histórica vía SYSTEM_INSTRUCTION**
-Para el tab "✦ El Fundador" se reutiliza exactamente la misma arquitectura
+Para el tab "✦ Pregunta a Calasanz" se reutiliza exactamente la misma arquitectura
 agentic de `consultar-archivo`. El único cambio es el `SYSTEM_INSTRUCTION`:
 posiciona a Calasanz como narrador en primera persona, obliga a citar solo textos
 del corpus y a traducir fragmentos en latín/italiano. No se necesita una capa
@@ -319,7 +319,7 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 - **Qué:** Chat en primera persona como Calasanz, basado en sus propios textos.
 - **Implementado:**
   - Edge Function `consultar-fundador` desplegada en Supabase (ref `afzemprkgxdqzqyqjtxt`).
-  - Tab "✦ El Fundador" en `index.html` con paleta sepia, biografía introductoria, 5 preguntas de ejemplo.
+  - Tab "✦ Pregunta a Calasanz" en `index.html` con paleta sepia, biografía introductoria, 5 preguntas de ejemplo.
   - JS: `ejecutarFundador()`, `initEjemplosFundador()`, constante `EDGE_FUNDADOR`.
   - Commit: `e486b58` | Vercel deploy: `dpl_3HhMcsDvrJS4yXkw9pfpb4N2e1nm`
 - **Schema:** sin cambios.
