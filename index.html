@@ -764,6 +764,98 @@
     .informe-body strong { font-weight: 700; color: #111827; }
     .informe-body em     { font-style: italic; color: #374151; }
 
+    /* ── Línea de tiempo ────────────────────────────────────── */
+    .timeline-wrapper {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 1.5rem 1.5rem 1.75rem;
+      overflow-x: auto;
+    }
+
+    .timeline-inner { min-width: 640px; }
+
+    .tl-axis {
+      position: relative; height: 20px; margin-bottom: .6rem;
+    }
+
+    .tl-axis-line {
+      position: absolute; top: 50%; left: 0; right: 0;
+      height: 2px; background: #e5e7eb; transform: translateY(-50%);
+    }
+
+    .tl-year-label {
+      position: absolute; transform: translateX(-50%);
+      font-size: .67rem; font-weight: 700; color: #9ca3af;
+      letter-spacing: .04em; top: 0; white-space: nowrap;
+    }
+
+    .tl-events {
+      position: relative; height: 66px; margin-bottom: .4rem;
+    }
+
+    .tl-event {
+      position: absolute; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    .tl-event-line { width: 1px; height: 10px; background: #d1d5db; }
+
+    .tl-event-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    .tl-event-text {
+      font-size: .61rem; font-weight: 600; text-align: center;
+      line-height: 1.25; margin-top: .25rem; white-space: nowrap;
+    }
+
+    .tl-divider {
+      height: 2px; background: #e5e7eb;
+      margin-bottom: 1rem; border-radius: 1px;
+    }
+
+    .tl-row {
+      display: flex; align-items: center; height: 30px;
+      margin-bottom: .28rem; cursor: pointer;
+      border-radius: 5px; transition: background .15s; padding: 0 .15rem;
+    }
+
+    .tl-row:hover { background: rgba(37,99,235,.05); }
+
+    .tl-row.tl-active {
+      background: rgba(37,99,235,.1);
+      outline: 1px solid rgba(37,99,235,.25);
+    }
+
+    .tl-vol-label {
+      width: 44px; flex-shrink: 0; font-size: .67rem; font-weight: 800;
+      color: #9ca3af; text-align: right; padding-right: .55rem;
+    }
+
+    .tl-track { flex: 1; position: relative; height: 20px; }
+
+    .tl-bar {
+      position: absolute; height: 100%; border-radius: 3px;
+      display: flex; align-items: center; padding: 0 .4rem;
+      overflow: hidden; transition: filter .15s; min-width: 6px;
+    }
+
+    .tl-bar:hover { filter: brightness(1.12); }
+
+    .tl-bar-label {
+      font-size: .63rem; color: rgba(255,255,255,.93);
+      font-weight: 700; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .tl-row-meta {
+      width: 80px; flex-shrink: 0; padding-left: .55rem;
+      font-size: .65rem; color: #9ca3af; line-height: 1.3;
+    }
+
+    .tl-hint {
+      text-align: center; font-size: .73rem; color: #9ca3af;
+      margin-top: 1rem; padding-top: .85rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
     /* ── Responsive ──────────────────────────────────────────── */
     @media (max-width: 800px) {
       .home-volumes-grid { grid-template-columns: repeat(3, 1fr); }
@@ -851,6 +943,11 @@
             id="tab-informes-btn" aria-controls="panel-informes"
             onclick="cambiarPestana('informes')">
       Informes temáticos
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-timeline-btn" aria-controls="panel-timeline"
+            onclick="cambiarPestana('timeline')">
+      Línea de tiempo
     </button>
     <button class="tab-btn" role="tab" aria-selected="false"
             id="tab-publicaciones-btn" aria-controls="panel-publicaciones"
@@ -1047,6 +1144,19 @@
       <div class="informe-body" id="cuerpo-informe"></div>
     </div>
 
+  </section>
+
+  <!-- Panel: Línea de tiempo -->
+  <section class="tab-panel" id="panel-timeline" role="tabpanel">
+    <div class="section-heading">
+      <span class="heading-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </span>
+      Línea de tiempo · Opera Omnia · 1597–1648
+    </div>
+    <div id="timeline-container"></div>
   </section>
 
   <!-- Panel 3: Publicaciones -->
@@ -1290,6 +1400,115 @@
     return html;
   }
 
+  // ── Línea de tiempo ───────────────────────────────────────────
+  const TL_INICIO = 1597;
+  const TL_FIN    = 1648;
+  const TL_RANGO  = TL_FIN - TL_INICIO;
+
+  const TL_COLORES = [
+    "#4338ca","#7c3aed","#1d4ed8","#0369a1",
+    "#047857","#b45309","#c2410c","#b91c1c","#9d174d","#4b5563",
+  ];
+
+  const TL_EVENTOS = [
+    { anio: 1597, label: "Fundación\nEscuelas Pías", color: "#1d4ed8" },
+    { anio: 1617, label: "Congregación\nreligiosa",   color: "#6366f1" },
+    { anio: 1621, label: "Orden\nreligiosa",           color: "#7c3aed" },
+    { anio: 1646, label: "Degradación\nsecular",       color: "#dc2626" },
+    { anio: 1648, label: "† Muerte de\nCalasanz",      color: "#374151" },
+  ];
+
+  function tlPct(year) {
+    return ((year - TL_INICIO) / TL_RANGO * 100).toFixed(3);
+  }
+
+  function tlParsearAnios(anioStr) {
+    const s = anioStr.replace(/c\.\s*/i, "").trim();
+    const m = s.match(/(\d{4})\s*[–—\-]\s*(\d{4})/);
+    if (m) return [parseInt(m[1]), parseInt(m[2])];
+    const y = parseInt(s);
+    return isNaN(y) ? [TL_INICIO, TL_INICIO + 2] : [y, y + 1];
+  }
+
+  function inicializarTimeline() {
+    const container = document.getElementById("timeline-container");
+    if (!container || container.children.length > 0) return;
+
+    const vols = OPERA_OMNIA
+      .map((v, i) => ({ ...v, _color: TL_COLORES[i] }))
+      .sort((a, b) => tlParsearAnios(a.anio)[0] - tlParsearAnios(b.anio)[0]);
+
+    const ANIOS_MARCADOS = [1600, 1610, 1620, 1630, 1640];
+
+    let h = `<div class="timeline-wrapper"><div class="timeline-inner">`;
+
+    // Eje de años
+    h += `<div class="tl-axis"><div class="tl-axis-line"></div>`;
+    for (const a of ANIOS_MARCADOS) {
+      h += `<span class="tl-year-label" style="left:${tlPct(a)}%">${a}</span>`;
+    }
+    // Primer y último año con alineación especial para evitar recorte
+    h += `<span class="tl-year-label" style="left:0%;transform:translateX(0)">${TL_INICIO}</span>`;
+    h += `<span class="tl-year-label" style="left:100%;transform:translateX(-100%)">${TL_FIN}</span>`;
+    h += `</div>`;
+
+    // Fila de eventos históricos
+    h += `<div class="tl-events">`;
+    for (const ev of TL_EVENTOS) {
+      const left = tlPct(ev.anio);
+      const label = ev.label.replace("\n", "<br>");
+      h += `<div class="tl-event" style="left:${left}%" title="${ev.label.replace('\n',' ')} (${ev.anio})">
+        <div class="tl-event-line"></div>
+        <div class="tl-event-dot" style="background:${ev.color}"></div>
+        <div class="tl-event-text" style="color:${ev.color}">${label}</div>
+      </div>`;
+    }
+    h += `</div>`;
+
+    // Línea divisoria
+    h += `<div class="tl-divider"></div>`;
+
+    // Filas de volúmenes
+    h += `<div>`;
+    for (const v of vols) {
+      const [ini, fin] = tlParsearAnios(v.anio);
+      const leftPct  = parseFloat(tlPct(Math.max(ini, TL_INICIO)));
+      const rightPct = parseFloat(tlPct(Math.min(fin, TL_FIN)));
+      const widthPct = Math.max(rightPct - leftPct, 1.2);
+      const showLabel = widthPct >= 7;
+      const tituloCorto = v.titulo.split("·")[0].trim().split(" ").slice(0, 3).join(" ");
+
+      h += `<div class="tl-row" data-vol="${escaparHTML(v.vol)}"
+        onclick="filtrarTimeline('${escaparHTML(v.vol)}')"
+        title="Vol. ${escaparHTML(v.vol)} · ${escaparHTML(v.titulo)} (${escaparHTML(v.anio)}) · ${v.chunks} fragmentos indexados">
+        <span class="tl-vol-label">Vol.${escaparHTML(v.vol)}</span>
+        <div class="tl-track">
+          <div class="tl-bar" style="left:${leftPct}%;width:${widthPct}%;background:${v._color}">
+            ${showLabel ? `<span class="tl-bar-label">${escaparHTML(tituloCorto)}</span>` : ""}
+          </div>
+        </div>
+        <div class="tl-row-meta">${escaparHTML(v.anio)}</div>
+      </div>`;
+    }
+    h += `</div>`;
+
+    h += `<p class="tl-hint">Haz clic en un volumen para buscar en sus documentos</p>`;
+    h += `</div></div>`;
+
+    container.innerHTML = h;
+  }
+
+  function filtrarTimeline(volNum) {
+    const vol = OPERA_OMNIA.find(v => v.vol === volNum);
+    if (!vol) return;
+    document.querySelectorAll(".tl-row").forEach(r => {
+      r.classList.toggle("tl-active", r.dataset.vol === volNum);
+    });
+    document.getElementById("input-buscar").value = vol.titulo;
+    cambiarPestana("buscar");
+    ejecutarBusqueda();
+  }
+
   // ── Preguntas de ejemplo ───────────────────────────────────────
   const PREGUNTAS_EJEMPLO = [
     "¿Qué decía Calasanz sobre la educación de los niños pobres?",
@@ -1320,6 +1539,7 @@
       p.classList.toggle("active", p.id === `panel-${id}`);
     });
     if (id === "estadisticas") animarBarras();
+    if (id === "timeline")    inicializarTimeline();
   }
 
   // ── Utilidades ─────────────────────────────────────────────────
