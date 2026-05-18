@@ -856,6 +856,133 @@
       border-top: 1px solid #e5e7eb;
     }
 
+    /* ── Clase de historia ───────────────────────────────────── */
+    .clase-form {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 1.5rem 1.75rem;
+    }
+
+    .clase-form label {
+      display: block; font-size: .8rem; font-weight: 700;
+      color: var(--gray-muted); text-transform: uppercase;
+      letter-spacing: .08em; margin-bottom: .5rem;
+    }
+
+    .clase-form textarea {
+      width: 100%; box-sizing: border-box;
+      border: 1.5px solid var(--border); border-radius: var(--radius-card);
+      padding: .75rem 1rem; font-family: "Inter", sans-serif;
+      font-size: .92rem; color: var(--gray-text); resize: vertical;
+      min-height: 72px; transition: border-color .2s;
+    }
+
+    .clase-form textarea:focus { border-color: var(--primary); outline: none; }
+
+    .nivel-group, .modo-group {
+      display: flex; align-items: center; gap: .45rem;
+      flex-wrap: wrap; margin-top: .9rem;
+    }
+
+    .nivel-label, .modo-label {
+      font-size: .72rem; font-weight: 700; color: var(--gray-muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-right: .1rem;
+    }
+
+    .nivel-chip, .modo-chip {
+      background: var(--white); color: var(--gray-muted);
+      border: 1.5px solid var(--border); border-radius: var(--radius-pill);
+      padding: .26rem .8rem; font-size: .78rem; font-weight: 600;
+      cursor: pointer; transition: all .18s;
+    }
+
+    .nivel-chip.active, .modo-chip.active {
+      background: var(--primary); color: var(--white); border-color: var(--primary);
+    }
+
+    .nivel-chip:hover:not(.active), .modo-chip:hover:not(.active) {
+      border-color: var(--primary); color: var(--primary);
+    }
+
+    .clase-result {
+      display: none; background: var(--white);
+      border: 1px solid var(--border); border-radius: var(--radius-card);
+      padding: 1.75rem 2rem; margin-top: 1.5rem;
+    }
+
+    .clase-result.visible { display: block; }
+
+    .clase-badge {
+      display: inline-block; font-size: .72rem; font-weight: 700; color: var(--primary);
+      text-transform: uppercase; letter-spacing: .09em;
+      background: rgba(37,99,235,.08); padding: .2rem .65rem;
+      border-radius: var(--radius-pill); margin-bottom: 1.2rem;
+    }
+
+    .clase-body .informe-body p  { font-size: .92rem; line-height: 1.75; margin: 0 0 .85rem; color: var(--gray-text); }
+    .clase-body .informe-body h2 { font-size: .82rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: .05em; margin: 1.5rem 0 .5rem; }
+    .clase-body .informe-body h3 { font-size: .95rem; font-weight: 700; color: var(--gray-text); margin: 1rem 0 .4rem; }
+    .clase-body .informe-body ul { padding-left: 1.3rem; margin: 0 0 .9rem; }
+    .clase-body .informe-body li { font-size: .9rem; line-height: 1.7; margin-bottom: .3rem; color: var(--gray-text); }
+
+    .quiz-wrapper { display: flex; flex-direction: column; gap: 1.4rem; }
+
+    .quiz-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 1.25rem 1.5rem;
+    }
+
+    .quiz-pregunta {
+      font-size: .95rem; font-weight: 600; color: var(--gray-text);
+      margin-bottom: .9rem; line-height: 1.5;
+    }
+
+    .quiz-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--primary); color: var(--white);
+      border-radius: 50%; width: 22px; height: 22px; font-size: .73rem;
+      font-weight: 800; margin-right: .45rem; flex-shrink: 0;
+      vertical-align: middle;
+    }
+
+    .quiz-options { display: flex; flex-direction: column; gap: .5rem; }
+
+    .quiz-option {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: var(--radius-card); padding: .6rem 1rem;
+      font-size: .88rem; color: var(--gray-text); cursor: pointer;
+      transition: all .18s; text-align: left; width: 100%;
+      font-family: "Inter", sans-serif;
+    }
+
+    .quiz-option:hover:not(:disabled) {
+      border-color: var(--primary); color: var(--primary);
+      background: rgba(37,99,235,.04);
+    }
+
+    .quiz-option.correcto {
+      border-color: #16a34a; background: #f0fdf4; color: #15803d; font-weight: 600;
+    }
+
+    .quiz-option.incorrecto {
+      border-color: #dc2626; background: #fef2f2; color: #b91c1c;
+    }
+
+    .quiz-explanation {
+      display: none; margin-top: .75rem; padding: .65rem .9rem;
+      background: #f0f9ff; border-left: 3px solid var(--primary);
+      border-radius: 0 var(--radius-card) var(--radius-card) 0;
+      font-size: .83rem; color: #0369a1; line-height: 1.55;
+    }
+
+    .quiz-explanation.visible { display: block; }
+
+    .quiz-score {
+      margin-top: 1rem; text-align: center; padding: .9rem;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      font-size: 1rem; font-weight: 700; color: var(--gray-text);
+    }
+
     /* ── Responsive ──────────────────────────────────────────── */
     @media (max-width: 800px) {
       .home-volumes-grid { grid-template-columns: repeat(3, 1fr); }
@@ -948,6 +1075,11 @@
             id="tab-timeline-btn" aria-controls="panel-timeline"
             onclick="cambiarPestana('timeline')">
       Línea de tiempo
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-clase-btn" aria-controls="panel-clase"
+            onclick="cambiarPestana('clase')">
+      Clase de historia
     </button>
     <button class="tab-btn" role="tab" aria-selected="false"
             id="tab-publicaciones-btn" aria-controls="panel-publicaciones"
@@ -1159,6 +1291,54 @@
     <div id="timeline-container"></div>
   </section>
 
+  <!-- Panel: Clase de historia -->
+  <section class="tab-panel" id="panel-clase" role="tabpanel">
+
+    <div class="clase-form">
+      <label for="input-clase">Tema o pregunta para la clase</label>
+      <textarea
+        id="input-clase"
+        placeholder="Ej: ¿Por qué Calasanz fundó escuelas gratuitas para niños pobres?"
+        rows="2"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ejecutarClase();}"
+      ></textarea>
+
+      <div class="nivel-group">
+        <span class="nivel-label">Nivel:</span>
+        <button class="nivel-chip"        data-nivel="primaria"      onclick="seleccionarNivel('primaria')">Primaria</button>
+        <button class="nivel-chip active" data-nivel="secundaria"    onclick="seleccionarNivel('secundaria')">Secundaria</button>
+        <button class="nivel-chip"        data-nivel="universitario" onclick="seleccionarNivel('universitario')">Universitario</button>
+      </div>
+
+      <div class="modo-group">
+        <span class="modo-label">Tipo:</span>
+        <button class="modo-chip active" data-modo="explicar"  onclick="seleccionarModo('explicar')">Explicación</button>
+        <button class="modo-chip"        data-modo="actividad" onclick="seleccionarModo('actividad')">Actividad</button>
+        <button class="modo-chip"        data-modo="quiz"      onclick="seleccionarModo('quiz')">Quiz</button>
+      </div>
+
+      <div style="margin-top:1.1rem">
+        <button class="btn-consultar" onclick="ejecutarClase()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          Generar
+        </button>
+      </div>
+    </div>
+
+    <div class="loading-msg" id="loading-clase" style="display:none">
+      Consultando el archivo y preparando el material… (puede tardar 10–20 s)
+    </div>
+
+    <div class="clase-result" id="resultado-clase">
+      <span class="clase-badge" id="clase-badge-label">Explicación generada</span>
+      <div class="clase-body" id="clase-body"></div>
+      <div class="fuentes-list" id="fuentes-clase"></div>
+    </div>
+
+  </section>
+
   <!-- Panel 3: Publicaciones -->
   <section class="tab-panel" id="panel-publicaciones" role="tabpanel">
     <div class="section-heading">
@@ -1223,6 +1403,7 @@
   const EDGE_CONSULTAR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-archivo";
   const EDGE_FUNDADOR  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-fundador";
   const EDGE_INFORME   = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/generar-informe";
+  const EDGE_EDUCATIVO = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/modo-educativo";
   const ANON_KEY       = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmemVtcHJrZ3hkcXpxeXFqdHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzE1NzEsImV4cCI6MjA5MjEwNzU3MX0.pyuNBBH6edmqqyCkwvbpvH3zQPCzH5UnQpW2soxGDi8";
 
   const AUTH_HEADERS = {
@@ -1507,6 +1688,130 @@
     document.getElementById("input-buscar").value = vol.titulo;
     cambiarPestana("buscar");
     ejecutarBusqueda();
+  }
+
+  // ── Modo Clase de Historia ─────────────────────────────────────
+  let nivelActivo = "secundaria";
+  let modoActivo  = "explicar";
+  let quizActivo  = null;
+  let quizRespuestas = {};
+
+  function seleccionarNivel(nivel) {
+    nivelActivo = nivel;
+    document.querySelectorAll(".nivel-chip").forEach(c => {
+      c.classList.toggle("active", c.dataset.nivel === nivel);
+    });
+  }
+
+  function seleccionarModo(modo) {
+    modoActivo = modo;
+    document.querySelectorAll(".modo-chip").forEach(c => {
+      c.classList.toggle("active", c.dataset.modo === modo);
+    });
+  }
+
+  async function ejecutarClase() {
+    const pregunta = document.getElementById("input-clase").value.trim();
+    if (!pregunta) return;
+
+    const loading   = document.getElementById("loading-clase");
+    const resultado = document.getElementById("resultado-clase");
+    loading.style.display = "block";
+    resultado.classList.remove("visible");
+    quizActivo     = null;
+    quizRespuestas = {};
+
+    try {
+      const resp = await fetch(EDGE_EDUCATIVO, {
+        method:  "POST",
+        headers: AUTH_HEADERS,
+        body:    JSON.stringify({ pregunta, nivel: nivelActivo, modo: modoActivo }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error ?? resp.statusText);
+
+      loading.style.display = "none";
+      resultado.classList.add("visible");
+
+      const badge      = document.getElementById("clase-badge-label");
+      const body       = document.getElementById("clase-body");
+      const fuentesDiv = document.getElementById("fuentes-clase");
+
+      if (modoActivo === "quiz") {
+        badge.textContent = "Quiz generado";
+        quizActivo = data.quiz;
+        quizRespuestas = {};
+        body.innerHTML = renderizarQuiz(data.quiz);
+      } else if (modoActivo === "actividad") {
+        badge.textContent = "Actividad generada";
+        body.innerHTML = `<div class="informe-body">${markdownAHtml(data.respuesta ?? "")}</div>`;
+      } else {
+        badge.textContent = "Explicación generada";
+        body.innerHTML = `<div class="informe-body">${markdownAHtml(data.respuesta ?? "")}</div>`;
+      }
+
+      const fuentes = data.fuentes ?? [];
+      if (fuentes.length > 0) {
+        fuentesDiv.innerHTML = `<div class="fuentes-header">Fuentes consultadas</div>` +
+          fuentes.map(f => `<div class="fuente-item">
+            <a href="${escaparHTML(f.drive_url)}" target="_blank" rel="noopener" class="fuente-link">
+              ${escaparHTML(f.nombre)}</a>
+            <span class="fuente-pagina">pág. ${f.pagina}</span>
+          </div>`).join("");
+      } else {
+        fuentesDiv.innerHTML = "";
+      }
+    } catch (e) {
+      loading.style.display = "none";
+      resultado.classList.add("visible");
+      document.getElementById("clase-body").innerHTML =
+        `<p style="color:#dc2626">Error: ${escaparHTML(String(e))}</p>`;
+    }
+  }
+
+  function renderizarQuiz(quiz) {
+    if (!quiz?.preguntas?.length) return "<p>No se pudo generar el quiz.</p>";
+    let h = `<div class="quiz-wrapper">`;
+    quiz.preguntas.forEach((q, qi) => {
+      h += `<div class="quiz-card" id="quiz-card-${qi}">
+        <div class="quiz-pregunta"><span class="quiz-num">${qi + 1}</span>${escaparHTML(q.pregunta)}</div>
+        <div class="quiz-options">`;
+      q.opciones.forEach((op, oi) => {
+        h += `<button class="quiz-option" id="quiz-opt-${qi}-${oi}"
+          onclick="responderQuiz(${qi},${oi})">${escaparHTML(op)}</button>`;
+      });
+      h += `</div>
+        <div class="quiz-explanation" id="quiz-exp-${qi}">${escaparHTML(q.explicacion)}</div>
+      </div>`;
+    });
+    h += `</div>`;
+    return h;
+  }
+
+  function responderQuiz(qi, oi) {
+    if (quizRespuestas[qi] !== undefined) return;
+    if (!quizActivo?.preguntas?.[qi]) return;
+    quizRespuestas[qi] = oi;
+    const correcta     = quizActivo.preguntas[qi].correcta;
+    const numPreguntas = quizActivo.preguntas.length;
+
+    document.querySelectorAll(`#quiz-card-${qi} .quiz-option`).forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === correcta)              btn.classList.add("correcto");
+      if (idx === oi && oi !== correcta) btn.classList.add("incorrecto");
+    });
+
+    const expEl = document.getElementById(`quiz-exp-${qi}`);
+    if (expEl) expEl.classList.add("visible");
+
+    if (Object.keys(quizRespuestas).length === numPreguntas) {
+      const aciertos = Object.entries(quizRespuestas)
+        .filter(([i, r]) => parseInt(r) === quizActivo.preguntas[parseInt(i)].correcta).length;
+      const scoreDiv = document.createElement("div");
+      scoreDiv.className = "quiz-score";
+      scoreDiv.textContent = `Resultado: ${aciertos} / ${numPreguntas} correctas`;
+      document.getElementById("clase-body").appendChild(scoreDiv);
+    }
   }
 
   // ── Preguntas de ejemplo ───────────────────────────────────────
