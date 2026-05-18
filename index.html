@@ -103,6 +103,31 @@
     .hero-search button:hover    { background: #d9660f; }
     .hero-search button:disabled { opacity: .55; cursor: default; }
 
+    .lang-selector {
+      display: flex; align-items: center; justify-content: center;
+      gap: .45rem; margin-top: .85rem;
+    }
+
+    .lang-label {
+      font-size: .72rem; color: rgba(255,255,255,.55); font-weight: 500;
+      text-transform: uppercase; letter-spacing: .09em; margin-right: .15rem;
+    }
+
+    .lang-chip {
+      background: rgba(255,255,255,.12); color: rgba(255,255,255,.75);
+      border: 1px solid rgba(255,255,255,.22); border-radius: var(--radius-pill);
+      padding: .18rem .62rem; font-size: .72rem; font-weight: 700;
+      letter-spacing: .07em; cursor: pointer; transition: all .18s;
+    }
+
+    .lang-chip.active {
+      background: var(--white); color: var(--primary); border-color: var(--white);
+    }
+
+    .lang-chip:hover:not(.active) {
+      background: rgba(255,255,255,.24); color: var(--white);
+    }
+
     /* ── Main ────────────────────────────────────────────────── */
     .page-body { flex: 1; background: var(--gray-bg); }
 
@@ -688,6 +713,13 @@
     />
     <button onclick="ejecutarBusqueda()" id="btn-buscar">Buscar</button>
   </div>
+  <div class="lang-selector" role="group" aria-label="Idioma de búsqueda">
+    <span class="lang-label">Idioma:</span>
+    <button class="lang-chip active" data-lang="es" onclick="seleccionarIdioma('es')" title="Español">ES</button>
+    <button class="lang-chip" data-lang="la" onclick="seleccionarIdioma('la')" title="Latín">LA</button>
+    <button class="lang-chip" data-lang="it" onclick="seleccionarIdioma('it')" title="Italiano">IT</button>
+    <button class="lang-chip" data-lang="en" onclick="seleccionarIdioma('en')" title="English">EN</button>
+  </div>
 </section>
 
 <!-- ── Contenido ──────────────────────────────────────────────── -->
@@ -987,6 +1019,16 @@
     "¿Cuáles fueron las causas de la degradación de la Orden en 1646?",
   ];
 
+  // ── Idioma de búsqueda ─────────────────────────────────────────
+  let idiomaActivo = "es";
+
+  function seleccionarIdioma(lang) {
+    idiomaActivo = lang;
+    document.querySelectorAll(".lang-chip").forEach(c => {
+      c.classList.toggle("active", c.dataset.lang === lang);
+    });
+  }
+
   // ── Pestañas ───────────────────────────────────────────────────
   function cambiarPestana(id) {
     document.querySelectorAll(".tab-btn").forEach(b => {
@@ -1042,7 +1084,7 @@
       const resp = await fetch(EDGE_BUSCAR, {
         method:  "POST",
         headers: AUTH_HEADERS,
-        body:    JSON.stringify({ query }),
+        body:    JSON.stringify({ query, idioma: idiomaActivo }),
       });
 
       if (!resp.ok) throw new Error(`Error ${resp.status}`);
@@ -1105,7 +1147,7 @@
       const resp = await fetch(EDGE_CONSULTAR, {
         method:  "POST",
         headers: AUTH_HEADERS,
-        body:    JSON.stringify({ pregunta }),
+        body:    JSON.stringify({ pregunta, idioma: idiomaActivo }),
       });
 
       if (!resp.ok) throw new Error(`Error ${resp.status}`);

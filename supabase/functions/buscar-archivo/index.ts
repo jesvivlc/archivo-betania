@@ -9,43 +9,54 @@ const CORS_HEADERS = {
 
 const GEMINI_EMBED_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent";
+const GEMINI_CHAT_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+async function traducirAEspanol(texto: string, apiKey: string): Promise<string> {
+  const resp = await fetch(GEMINI_CHAT_URL, {
+    method: "POST",
+    headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{
+        role: "user",
+        parts: [{ text: `Traduce al español. Devuelve SOLO la traducción, sin explicaciones ni texto adicional.\n\n${texto}` }],
+      }],
+    }),
+  });
+  if (!resp.ok) return texto;
+  const data = await resp.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? texto;
+}
 
 async function generarEmbedding(texto: string, apiKey: string): Promise<number[]> {
   const resp = await fetch(GEMINI_EMBED_URL, {
     method: "POST",
-    headers: {
-      "x-goog-api-key": apiKey,
-      "Content-Type":   "application/json",
-    },
+    headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
     body: JSON.stringify({
       model:   "models/gemini-embedding-001",
       content: { parts: [{ text: texto }] },
     }),
   });
-
-  if (!resp.ok) {
-    const err = await resp.text();
-    throw new Error(`Gemini error ${resp.status}: ${err}`);
-  }
-
+  if (!resp.ok) throw new Error(`Gemini error ${resp.status}: ${await resp.text()}`);
   const data = await resp.json();
-  const embedding = (data.embedding.values as number[]).slice(0, 768);
-  return embedding;
+  return (data.embedding.values as number[]).slice(0, 768);
 }
+
+// ─── Handler ────────────────────────────────────────────────────────────────
 
 serve(async (req: Request) => {
   const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
   const DB_SERVICE_KEY = Deno.env.get("DB_SERVICE_KEY") ?? "";
-  const DB_URL = Deno.env.get("DB_URL") ?? "";
-
-  console.log("Keys check - Gemini:", GEMINI_API_KEY.length, "DB:", DB_SERVICE_KEY.length);
+  const DB_URL         = Deno.env.get("DB_URL") ?? "";
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: CORS_HEADERS });
   }
 
   try {
-    const { query } = await req.json() as { query: string };
+    const { query, idioma } = await req.json() as { query: string; idioma?: string };
 
     if (!query?.trim()) {
       return new Response(
@@ -54,12 +65,15 @@ serve(async (req: Request) => {
       );
     }
 
-    // Generar embedding de la consulta
-    const embedding = await generarEmbedding(query.trim(), GEMINI_API_KEY);
+    // Traducir al español si la query viene en otro idioma
+    const necesitaTraduccion = idioma && idioma !== "es";
+    const queryBusqueda = necesitaTraduccion
+      ? await traducirAEspanol(query.trim(), GEMINI_API_KEY)
+      : query.trim();
 
-    // Buscar en Supabase
+    const embedding = await generarEmbedding(queryBusqueda, GEMINI_API_KEY);
+
     const supa = createClient(DB_URL, DB_SERVICE_KEY);
-
     const { data, error } = await supa.rpc("buscar_chunks", {
       query_embedding:      embedding,
       match_count:          10,
