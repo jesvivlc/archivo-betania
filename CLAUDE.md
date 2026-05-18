@@ -21,20 +21,20 @@ Usuarios: investigadores, religiosos escolapios, docentes, estudiantes de histor
 ┌─────────────────────────────────────────────────────────┐
 │  index.html  (Vercel · sitio estático · sin build step) │
 │                                                         │
-│  Pestañas: Búsqueda · Consultar · Publicaciones ·       │
-│            Estadísticas                                 │
+│  Pestañas: Búsqueda · Consultar · ✦ El Fundador ·       │
+│            Publicaciones · Estadísticas                 │
 │  Home: grid de miniaturas Drive → abre visor PDF        │
 └────────────────┬────────────────────────────────────────┘
                  │ fetch (CORS abierto, anon key pública)
-    ┌────────────┴────────────┐
-    ▼                         ▼
-buscar-archivo           consultar-archivo
-(Edge Function · Deno)   (Edge Function · Deno)
-    │                         │
-    │  Gemini                 │  Gemini 2.5 Flash
-    │  embedding-001          │  + function calling
-    │  (768 dims)             │  bucle agentic
-    └────────────┬────────────┘
+    ┌────────────┼────────────────────┐
+    ▼            ▼                    ▼
+buscar-archivo  consultar-archivo  consultar-fundador
+(Edge Fn·Deno) (Edge Fn·Deno)     (Edge Fn·Deno)
+    │            │                    │
+    │  Gemini    │  Gemini 2.5 Flash  │  Gemini 2.5 Flash
+    │  emb-001   │  + func calling    │  + func calling
+    │  768 dims  │  bucle agentic     │  persona Calasanz
+    └────────────┴────────────────────┘
                  ▼
     Supabase PostgreSQL + pgvector
     ┌──────────────────────────────┐
@@ -105,6 +105,25 @@ El agente hace 2-4 llamadas de herramientas por pregunta. Flash es suficiente
 para recuperar y sintetizar fragmentos históricos. Pro no aporta calidad
 apreciable para este caso de uso con el coste adicional.
 
+**Modo Fundador: persona histórica vía SYSTEM_INSTRUCTION**
+Para el tab "✦ El Fundador" se reutiliza exactamente la misma arquitectura
+agentic de `consultar-archivo`. El único cambio es el `SYSTEM_INSTRUCTION`:
+posiciona a Calasanz como narrador en primera persona, obliga a citar solo textos
+del corpus y a traducir fragmentos en latín/italiano. No se necesita una capa
+extra de infraestructura — solo ingeniería de prompt.
+
+**Paleta sepia para el Modo Fundador**
+Theming visual diferenciado mediante CSS custom properties:
+`--sepia: #7B5E2A`, `--sepia-dark: #5C3D0F`, `--sepia-light: #FEF9EE`,
+`--sepia-border: #DDD0A8`, `--sepia-muted: #9C7A3A`.
+Permite distinguir visualmente el contexto histórico del buscador moderno.
+
+**Supabase CLI: usar `.\supabase.exe` en PowerShell**
+El binario `supabase.exe` está en la raíz del proyecto y no está en el PATH.
+Siempre usar `.\supabase.exe functions deploy <nombre>` desde PowerShell.
+Docker no es necesario para deploy remoto (solo para desarrollo local).
+La advertencia `WARNING: Docker is not running` puede ignorarse en deploys remotos.
+
 ---
 
 ## Estructura de carpetas
@@ -145,8 +164,10 @@ archivo-betania/
 │   └── functions/
 │       ├── buscar-archivo/
 │       │   └── index.ts          # Búsqueda semántica simple (sin LLM en respuesta)
-│       └── consultar-archivo/
-│           └── index.ts          # Agente RAG con Gemini 2.5 Flash + function calling
+│       ├── consultar-archivo/
+│       │   └── index.ts          # Agente RAG con Gemini 2.5 Flash + function calling
+│       └── consultar-fundador/
+│           └── index.ts          # Agente RAG · Calasanz en 1ª persona (Sprint 1 ✅)
 │
 ├── listar_modelos.py             # Utilidad: lista modelos Gemini de embedding
 ├── listar_modelos_chat.py        # Utilidad: lista modelos Gemini con generateContent
@@ -233,6 +254,7 @@ DRIVE_FOLDER_ID     → ID de la carpeta raíz en Google Drive
 ```javascript
 EDGE_BUSCAR    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-archivo"
 EDGE_CONSULTAR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-archivo"
+EDGE_FUNDADOR  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-fundador"
 ANON_KEY       = "eyJhbG..."   // anon key pública, solo lectura
 ```
 
@@ -272,14 +294,18 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
 
 ### Edge Functions (Supabase)
 - Proyecto ref: `afzemprkgxdqzqyqjtxt`
-- Deploy: `supabase functions deploy buscar-archivo` / `supabase functions deploy consultar-archivo`
+- Deploy: `.\supabase.exe functions deploy <nombre>` (PowerShell desde raíz del proyecto)
+- Funciones desplegadas: `buscar-archivo`, `consultar-archivo`, `consultar-fundador`
 - Runtime: Deno (no necesita package.json)
-- Vinculación: `supabase link --project-ref afzemprkgxdqzqyqjtxt`
+- Vinculación: `.\supabase.exe link --project-ref afzemprkgxdqzqyqjtxt`
 
 ### Git / GitHub
 - Repositorio: **https://github.com/jesvivlc/archivo-betania**
 - Rama: `master`
-- 1 commit hasta ahora (`52dea53`)
+- Commits:
+  - `52dea53` — commit inicial con proyecto completo
+  - `bacd112` — CLAUDE.md añadido (memoria del proyecto)
+  - `e486b58` — Sprint 1 · Modo Fundador (#1)
 
 ---
 
@@ -289,13 +315,14 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 
 ### Sprint 1 — Bajo esfuerzo, impacto máximo
 
-#### 1. Modo "¿Qué diría el Fundador?"
+#### ✅ 1. Modo "¿Qué diría el Fundador?" — COMPLETADO (2026-05-18)
 - **Qué:** Chat en primera persona como Calasanz, basado en sus propios textos.
-- **Arquitectura:**
-  - Nueva Edge Function `consultar-fundador` — copia de `consultar-archivo` con system prompt en primera persona histórica.
-  - Nuevo tab en `index.html`.
+- **Implementado:**
+  - Edge Function `consultar-fundador` desplegada en Supabase (ref `afzemprkgxdqzqyqjtxt`).
+  - Tab "✦ El Fundador" en `index.html` con paleta sepia, biografía introductoria, 5 preguntas de ejemplo.
+  - JS: `ejecutarFundador()`, `initEjemplosFundador()`, constante `EDGE_FUNDADOR`.
+  - Commit: `e486b58` | Vercel deploy: `dpl_3HhMcsDvrJS4yXkw9pfpb4N2e1nm`
 - **Schema:** sin cambios.
-- **Esfuerzo estimado:** 2-3 horas.
 
 #### 2. Buscador multilingüe
 - **Qué:** Búsquedas en latín, italiano e inglés (Calasanz escribió en los tres).
@@ -395,9 +422,10 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 # Desplegar frontend
 vercel --prod
 
-# Desplegar una Edge Function
-supabase functions deploy buscar-archivo
-supabase functions deploy consultar-archivo
+# Desplegar una Edge Function (PowerShell, desde raíz del proyecto)
+.\supabase.exe functions deploy buscar-archivo
+.\supabase.exe functions deploy consultar-archivo
+.\supabase.exe functions deploy consultar-fundador
 
 # Ver secretos configurados
 supabase secrets list
