@@ -22,7 +22,9 @@ Usuarios: investigadores, religiosos escolapios, docentes, estudiantes de histor
 │  index.html  (Vercel · sitio estático · sin build step) │
 │                                                         │
 │  Pestañas: Búsqueda · Consultar · ✦ Pregunta a Calasanz │
-│            Publicaciones · Estadísticas                 │
+│            Informes temáticos · Línea de tiempo ·       │
+│            Clase de historia · Mapa · Publicaciones ·   │
+│            Estadísticas                                 │
 │  Home: grid de miniaturas Drive → abre visor PDF        │
 └────────────────┬────────────────────────────────────────┘
                  │ fetch (CORS abierto, anon key pública)
@@ -35,6 +37,16 @@ buscar-archivo  consultar-archivo  consultar-fundador
     │  emb-001   │  + func calling    │  + func calling
     │  768 dims  │  bucle agentic     │  persona Calasanz
     └────────────┴────────────────────┘
+                 │
+    ┌────────────┴────────────────────┐
+    ▼                                 ▼
+generar-informe                 modo-educativo
+(Edge Fn·Deno)                  (Edge Fn·Deno)
+    │                                 │
+    │  6 subtemas paralelos           │  nivel: primaria/secundaria/univ
+    │  top-20 chunks dedup            │  modo: explicar/actividad/quiz
+    │  Gemini síntesis markdown       │  JSON quiz con extraerJSON()
+    └─────────────────────────────────┘
                  ▼
     Supabase PostgreSQL + pgvector
     ┌──────────────────────────────┐
@@ -255,6 +267,8 @@ DRIVE_FOLDER_ID     → ID de la carpeta raíz en Google Drive
 EDGE_BUSCAR    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-archivo"
 EDGE_CONSULTAR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-archivo"
 EDGE_FUNDADOR  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-fundador"
+EDGE_INFORME   = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/generar-informe"
+EDGE_EDUCATIVO = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/modo-educativo"
 ANON_KEY       = "eyJhbG..."   // anon key pública, solo lectura
 ```
 
@@ -295,7 +309,7 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
 ### Edge Functions (Supabase)
 - Proyecto ref: `afzemprkgxdqzqyqjtxt`
 - Deploy: `.\supabase.exe functions deploy <nombre>` (PowerShell desde raíz del proyecto)
-- Funciones desplegadas: `buscar-archivo`, `consultar-archivo`, `consultar-fundador`
+- Funciones desplegadas: `buscar-archivo`, `consultar-archivo`, `consultar-fundador`, `generar-informe`, `modo-educativo`
 - Runtime: Deno (no necesita package.json)
 - Vinculación: `.\supabase.exe link --project-ref afzemprkgxdqzqyqjtxt`
 
@@ -306,6 +320,11 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
   - `52dea53` — commit inicial con proyecto completo
   - `bacd112` — CLAUDE.md añadido (memoria del proyecto)
   - `e486b58` — Sprint 1 · Modo Fundador (#1)
+  - `da1c17a` — Multilingüe: chips ES/LA/IT/EN + traducción automática (#2)
+  - `602a364` — Informes temáticos: generar-informe Edge Fn + tab (#4)
+  - `6ee0515` — Línea de tiempo interactiva Fase A (#3)
+  - `b0e3e3b` — Clase de historia: modo-educativo Edge Fn + tab (#6)
+  - `25d48c4` — Mapa geográfico de fundaciones con Leaflet.js (#8)
 
 ---
 
@@ -324,33 +343,37 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
   - Commit: `e486b58` | Vercel deploy: `dpl_3HhMcsDvrJS4yXkw9pfpb4N2e1nm`
 - **Schema:** sin cambios.
 
-#### 2. Buscador multilingüe
+#### ✅ 2. Buscador multilingüe — COMPLETADO (2026-05-19)
 - **Qué:** Búsquedas en latín, italiano e inglés (Calasanz escribió en los tres).
-- **Arquitectura:**
-  - Los embeddings de Gemini ya son multilinguales — puede funcionar sin cambios.
-  - Añadir detección de idioma en las Edge Functions y traducción opcional de la query a español antes del embedding.
-  - UI: chips de idioma encima del buscador.
+- **Implementado:**
+  - Chips ES/LA/IT/EN en la barra de búsqueda y en el panel Consultar.
+  - `buscar-archivo` y `consultar-archivo` aceptan `{ idioma? }` y llaman a `traducirAEspanol()` si `idioma !== "es"`.
+  - `SYSTEM_INSTRUCTION` del agente actualizada para forzar términos de búsqueda en español.
+  - `ejecutarFundador()` NO recibe parámetro `idioma` (constraint explícito del usuario).
+  - Commit: `da1c17a`
 - **Schema:** sin cambios.
-- **Esfuerzo estimado:** 3-4 horas.
 
 ### Sprint 2 — Impacto investigador alto
 
-#### 3. Línea de tiempo interactiva
+#### ✅ 3. Línea de tiempo interactiva — COMPLETADO (2026-05-19)
 - **Qué:** Visualización horizontal 1597–1648 con los volúmenes y eventos clave.
-- **Arquitectura:**
-  - **Fase A (rápida):** Solo frontend, usa el array `OPERA_OMNIA` ya existente.
-  - **Fase B (completa):** Añadir `anio_inicio INT` y `anio_fin INT` a `documentos`. Nueva función SQL `buscar_chunks_periodo()`. Filtrado temporal en el agente.
-- **Schema:** Fase B requiere migración.
-- **Esfuerzo estimado:** Fase A 4h · Fase B +4h.
+- **Implementado (Fase A):**
+  - Tab "Línea de tiempo" con lazy init (`inicializarTimeline()` en `cambiarPestana`).
+  - Eje de años (1597–1648), 5 eventos históricos marcados, 10 filas de volúmenes color-coded.
+  - `tlParsearAnios()` maneja fechas aproximadas (`c. 1615`) y rangos con en-dash.
+  - Clic en volumen → activa búsqueda en tab Búsqueda (`filtrarTimeline()`).
+  - Commit: `6ee0515`
+- **Fase B pendiente:** migración de schema con `anio_inicio`/`anio_fin` en `documentos`.
+- **Schema:** sin cambios (Fase A).
 
-#### 4. Informes automáticos por tema
+#### ✅ 4. Informes automáticos por tema — COMPLETADO (2026-05-19)
 - **Qué:** Genera un documento estructurado (resumen / detallado / académico) sobre cualquier tema del archivo.
-- **Arquitectura:**
-  - Nueva Edge Function `generar-informe`.
-  - Recibe `{ tema, formato }`. Ejecuta 5-6 búsquedas paralelas. Gemini sintetiza en secciones.
-  - Frontend: nuevo tab con selector de tema y botón de descarga.
+- **Implementado:**
+  - Edge Function `generar-informe`: genera 6 subtemas → búsquedas paralelas → dedup por `chunk_id` → top-20 → síntesis Gemini en markdown (5 secciones fijas).
+  - Tab "Informes temáticos" con chips de formato (Resumen/Detallado/Académico), botón descarga `.md`.
+  - `markdownAHtml()`: renderer línea a línea (H1-H3, UL/LI, bold, italic, párrafos).
+  - Commit: `602a364`
 - **Schema:** sin cambios.
-- **Esfuerzo estimado:** 4-5 horas.
 
 ### Sprint 3 — Ampliar alcance
 
@@ -363,14 +386,15 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 - **Schema:** sin cambios.
 - **Esfuerzo estimado:** 5-6 horas.
 
-#### 6. Modo clase de historia
+#### ✅ 6. Modo clase de historia — COMPLETADO (2026-05-19)
 - **Qué:** Tres submodos — explicación por nivel de edad, generador de actividades, quiz.
-- **Arquitectura:**
-  - Nueva Edge Function `modo-educativo`.
-  - Parámetros: `{ pregunta, nivel: "primaria"|"secundaria"|"universitario", modo: "explicar"|"quiz"|"actividad" }`.
-  - Frontend: selector de nivel + renderizado especial para quizzes.
+- **Implementado:**
+  - Edge Function `modo-educativo`: `NIVEL_DESC` (primaria/secundaria/universitario) + `MODO_INSTRUCCION` (explicar/actividad/quiz). Quiz retorna JSON estructurado; `extraerJSON()` como fallback parser.
+  - Tab "Clase de historia" con chips de nivel y tipo, textarea, renderizado de quiz interactivo.
+  - `renderizarQuiz()`: 3 preguntas con 4 opciones cada una, feedback inmediato por opción, explicación al responder, puntuación final.
+  - `responderQuiz(qi, oi)`: desactiva opciones, marca correcto/incorrecto, muestra explicación.
+  - Commit: `b0e3e3b`
 - **Schema:** sin cambios.
-- **Esfuerzo estimado:** 6-8 horas.
 
 ### Sprint 4 — Herramientas de investigación
 
@@ -383,14 +407,15 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 - **Schema:** requiere migración (igual que Línea de tiempo Fase B).
 - **Esfuerzo estimado:** 5-6 horas (+ la migración de schema).
 
-#### 8. Mapa geográfico de la Provincia
+#### ✅ 8. Mapa geográfico de la Provincia — COMPLETADO (2026-05-20)
 - **Qué:** Mapa interactivo con las fundaciones escolapias (Roma 1597, Nárni, Frascati, Florencia, Génova, Moravia, Polonia...).
-- **Arquitectura:**
-  - Sin nuevo backend. Datos geográficos históricos hardcodeados en JS.
-  - Leaflet.js vía CDN. Al clicar un marcador busca chunks sobre esa ciudad.
-  - Nuevo tab "Mapa" en `index.html`.
+- **Implementado:**
+  - Leaflet.js vía CDN (v1.9.4, OpenStreetMap tiles, sin API key).
+  - `FUNDACIONES` array: 10 localizaciones (Roma 1597 → Podolinec 1642) con `{ nombre, lat, lon, anio, termino, descripcion }`.
+  - Tab "Mapa" con layout grid (mapa izq + panel lateral der). Lazy init en `cambiarPestana`.
+  - Marcador personalizado SVG azul. Click marker → llama `buscar-archivo` con `termino` → muestra top-6 chunks + info card en el panel.
+  - Commit: `25d48c4`
 - **Schema:** sin cambios.
-- **Esfuerzo estimado:** 5-6 horas.
 
 ### Sprint 5 — Largo plazo
 
