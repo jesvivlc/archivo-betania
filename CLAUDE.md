@@ -23,8 +23,8 @@ Usuarios: investigadores, religiosos escolapios, docentes, estudiantes de histor
 │                                                         │
 │  Pestañas: Búsqueda · Consultar · ✦ Pregunta a Calasanz │
 │            Informes temáticos · Línea de tiempo ·       │
-│            Clase de historia · Mapa · Publicaciones ·   │
-│            Estadísticas                                 │
+│            Comparador · Clase de historia · Mapa ·      │
+│            Red de personas · Publicaciones · Stats      │
 │  Home: grid de miniaturas Drive → abre visor PDF        │
 └────────────────┬────────────────────────────────────────┘
                  │ fetch (CORS abierto, anon key pública)
@@ -269,6 +269,9 @@ EDGE_CONSULTAR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consulta
 EDGE_FUNDADOR  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-fundador"
 EDGE_INFORME   = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/generar-informe"
 EDGE_EDUCATIVO = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/modo-educativo"
+EDGE_PERIODO   = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-periodo"
+EDGE_COMPARADOR= "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/comparar-epocas"
+EDGE_RED       = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/red-personas"
 ANON_KEY       = "eyJhbG..."   // anon key pública, solo lectura
 ```
 
@@ -309,7 +312,7 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
 ### Edge Functions (Supabase)
 - Proyecto ref: `afzemprkgxdqzqyqjtxt`
 - Deploy: `.\supabase.exe functions deploy <nombre>` (PowerShell desde raíz del proyecto)
-- Funciones desplegadas: `buscar-archivo`, `consultar-archivo`, `consultar-fundador`, `generar-informe`, `modo-educativo`
+- Funciones desplegadas: `buscar-archivo`, `consultar-archivo`, `consultar-fundador`, `generar-informe`, `modo-educativo`, `buscar-periodo`, `comparar-epocas`, `red-personas`
 - Runtime: Deno (no necesita package.json)
 - Vinculación: `.\supabase.exe link --project-ref afzemprkgxdqzqyqjtxt`
 
@@ -326,6 +329,7 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
   - `b0e3e3b` — Clase de historia: modo-educativo Edge Fn + tab (#6)
   - `25d48c4` — Mapa geográfico de fundaciones con Leaflet.js (#8)
   - `5621c51` — Comparador de épocas + Línea de tiempo Fase B (#7 + #3B)
+  - `59c1c45` — Red de personas y relaciones: D3 graph + Edge Fn (#9)
 
 ---
 
@@ -424,15 +428,15 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 
 ### Sprint 5 — Largo plazo
 
-#### 9. Red de personas y relaciones
+#### ✅ 9. Red de personas y relaciones — COMPLETADO (2026-05-21)
 - **Qué:** Grafo interactivo de personas mencionadas en los documentos y sus relaciones.
-- **Arquitectura:**
-  - Nuevo script Python `extraer_personas.py`: llama a Gemini sobre cada chunk, extrae entidades.
-  - Nuevas tablas: `personas(id, nombre, rol, periodo)` y `relaciones(id, persona_a, persona_b, tipo, chunk_id)`.
-  - Nueva Edge Function `red-personas`.
-  - D3.js force-directed graph en el frontend.
-- **Schema:** 2 tablas nuevas. Extracción ~2-4h de proceso (rate limits).
-- **Esfuerzo estimado:** 12-16 horas total.
+- **Implementado:**
+  - Tablas `personas(id UUID, nombre UNIQUE, rol, periodo)` y `relaciones(id UUID, persona_a, persona_b, tipo, chunk_id)` creadas en Supabase con RLS pública.
+  - `extraer_personas.py`: reanudable via `.temp/procesados.txt`; itera 5413 chunks, extrae JSON de personas+relaciones con Gemini 2.5 Flash (rate limit 6s), upsert por nombre único. Ejecutar localmente antes de usar el grafo.
+  - Edge Function `red-personas` (GET): devuelve top-60 personas por grado + sus relaciones como `{nodos, enlaces}`.
+  - Frontend: pestaña "Red de personas" con grafo D3.js v7 force-directed. Nodos coloreados por rol, tamaño por grado, drag+zoom, clic → tarjeta de información con lista de relaciones. Inicialización lazy.
+  - Commit: `59c1c45`
+- **Para poblar la BD:** ejecutar `python extraer_personas.py` (~8h a 6s/chunk).
 
 #### 10. Resumen semanal por email
 - **Qué:** Email automático semanal con fragmentos destacados del archivo.
