@@ -1158,6 +1158,66 @@
       .mapa-side-body { max-height: 300px; }
     }
 
+    /* ── Red de personas ─────────────────────────────────────── */
+    .red-container {
+      display: grid; grid-template-columns: 1fr 300px;
+      gap: 1.25rem; min-height: 540px;
+    }
+    #red-svg-wrap {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card); overflow: hidden;
+      min-height: 540px; position: relative;
+    }
+    #red-svg { width: 100%; height: 540px; cursor: grab; }
+    #red-svg:active { cursor: grabbing; }
+    .red-side { display: flex; flex-direction: column; gap: .75rem; }
+    .red-side-header {
+      font-size: .8rem; font-weight: 700; color: var(--gray-muted);
+      text-transform: uppercase; letter-spacing: .08em;
+      padding-bottom: .5rem; border-bottom: 1px solid var(--border);
+    }
+    .red-info-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 1rem 1.1rem;
+    }
+    .red-nombre { font-size: 1rem; font-weight: 800; color: var(--gray-text); margin-bottom: .3rem; }
+    .red-rol {
+      display: inline-block; font-size: .75rem; font-weight: 700; color: var(--primary);
+      background: rgba(37,99,235,.08); padding: .15rem .55rem;
+      border-radius: var(--radius-pill); margin-bottom: .5rem;
+    }
+    .red-periodo { font-size: .82rem; color: var(--gray-muted); margin-bottom: .75rem; }
+    .red-rel-list { list-style: none; padding: 0; margin: 0; max-height: 320px; overflow-y: auto; }
+    .red-rel-item {
+      font-size: .82rem; color: var(--gray-text); line-height: 1.5;
+      padding: .35rem 0; border-bottom: 1px solid var(--border);
+    }
+    .red-rel-item:last-child { border-bottom: none; }
+    .red-rel-tipo { color: var(--gray-muted); font-size: .75rem; font-style: italic; }
+    .red-hint {
+      font-size: .83rem; color: var(--gray-muted); line-height: 1.55;
+      text-align: center; padding: 2rem 1rem;
+    }
+    .red-loading { font-size: .83rem; color: var(--gray-muted); text-align: center; padding: 3rem 1rem; }
+    .red-badge {
+      display: inline-block; font-size: .7rem; font-weight: 700;
+      background: rgba(37,99,235,.08); color: var(--primary);
+      padding: .1rem .4rem; border-radius: var(--radius-pill);
+    }
+    .red-legend {
+      display: flex; flex-wrap: wrap; gap: .4rem .75rem;
+      font-size: .72rem; color: var(--gray-muted); margin-top: .5rem;
+    }
+    .red-legend-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      display: inline-block; margin-right: .25rem; vertical-align: middle;
+    }
+    @media (max-width: 760px) {
+      .red-container { grid-template-columns: 1fr; }
+      #red-svg { height: 340px; }
+      #red-svg-wrap { min-height: 340px; }
+    }
+
     /* ── Responsive ──────────────────────────────────────────── */
     @media (max-width: 800px) {
       .home-volumes-grid { grid-template-columns: repeat(3, 1fr); }
@@ -1265,6 +1325,11 @@
             id="tab-mapa-btn" aria-controls="panel-mapa"
             onclick="cambiarPestana('mapa')">
       Mapa
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-red-btn" aria-controls="panel-red"
+            onclick="cambiarPestana('red')">
+      Red de personas
     </button>
     <button class="tab-btn" role="tab" aria-selected="false"
             id="tab-publicaciones-btn" aria-controls="panel-publicaciones"
@@ -1596,6 +1661,41 @@
     </div>
   </section>
 
+  <!-- Panel: Red de personas y relaciones -->
+  <section class="tab-panel" id="panel-red" role="tabpanel">
+    <div class="section-heading">
+      <span class="heading-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2">
+          <circle cx="12" cy="5" r="2"/><circle cx="4" cy="19" r="2"/><circle cx="20" cy="19" r="2"/>
+          <line x1="12" y1="7" x2="6" y2="17"/><line x1="12" y1="7" x2="18" y2="17"/>
+          <line x1="6" y1="19" x2="18" y2="19"/>
+        </svg>
+      </span>
+      Red de personas y relaciones
+    </div>
+    <div class="red-container">
+      <div id="red-svg-wrap">
+        <div class="red-loading" id="red-loading">Cargando red de personas…</div>
+        <svg id="red-svg" style="display:none"></svg>
+      </div>
+      <div class="red-side">
+        <div class="red-side-header">Información</div>
+        <div id="red-info">
+          <div class="red-hint">Haz clic en un nodo para ver los detalles de la persona y sus relaciones en el archivo.</div>
+        </div>
+        <div class="red-legend" id="red-legend" style="display:none">
+          <span><span class="red-legend-dot" style="background:#dc2626"></span>Papa</span>
+          <span><span class="red-legend-dot" style="background:#7c3aed"></span>Obispo</span>
+          <span><span class="red-legend-dot" style="background:#2563eb"></span>Provincial</span>
+          <span><span class="red-legend-dot" style="background:#0891b2"></span>Rector</span>
+          <span><span class="red-legend-dot" style="background:#16a34a"></span>Maestro</span>
+          <span><span class="red-legend-dot" style="background:#ca8a04"></span>Prior</span>
+          <span><span class="red-legend-dot" style="background:#6b7280"></span>Otros</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Panel 3: Publicaciones -->
   <section class="tab-panel" id="panel-publicaciones" role="tabpanel">
     <div class="section-heading">
@@ -1655,6 +1755,7 @@
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/d3@7/dist/d3.min.js"></script>
 <script>
   // ── Configuración ──────────────────────────────────────────────
   const EDGE_BUSCAR    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-archivo";
@@ -1664,6 +1765,7 @@
   const EDGE_EDUCATIVO  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/modo-educativo";
   const EDGE_PERIODO    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-periodo";
   const EDGE_COMPARADOR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/comparar-epocas";
+  const EDGE_RED        = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/red-personas";
   const ANON_KEY       = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmemVtcHJrZ3hkcXpxeXFqdHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzE1NzEsImV4cCI6MjA5MjEwNzU3MX0.pyuNBBH6edmqqyCkwvbpvH3zQPCzH5UnQpW2soxGDi8";
 
   const AUTH_HEADERS = {
@@ -2050,6 +2152,168 @@
     }
   }
 
+  // ── Red de personas y relaciones ───────────────────────────────
+  const RED_COLORES = {
+    papa:       "#dc2626",
+    cardenal:   "#b91c1c",
+    obispo:     "#7c3aed",
+    provincial: "#2563eb",
+    rector:     "#0891b2",
+    maestro:    "#16a34a",
+    prior:      "#ca8a04",
+    hermano:    "#65a30d",
+    defecto:    "#6b7280",
+  };
+
+  function colorNodo(rol) {
+    const r = (rol || "").toLowerCase();
+    for (const [k, v] of Object.entries(RED_COLORES)) {
+      if (r.includes(k)) return v;
+    }
+    return RED_COLORES.defecto;
+  }
+
+  let redCargada = false;
+  let redData    = null;
+
+  async function inicializarRed() {
+    if (redCargada) return;
+    const loading = document.getElementById("red-loading");
+    try {
+      const resp = await fetch(EDGE_RED, { headers: AUTH_HEADERS });
+      const data = await resp.json();
+
+      if (data.error) {
+        loading.textContent = "Error al cargar la red: " + data.error;
+        return;
+      }
+      if (!data.nodos || data.nodos.length === 0) {
+        loading.innerHTML =
+          `<div style="padding:3rem 1rem;color:var(--gray-muted);font-size:.85rem;text-align:center">
+            La red aún no tiene datos.<br>
+            Ejecuta <code>extraer_personas.py</code> para poblarla.
+          </div>`;
+        return;
+      }
+
+      redData = data;
+      loading.style.display = "none";
+      document.getElementById("red-svg").style.display = "block";
+      document.getElementById("red-legend").style.display = "flex";
+      renderizarRed(data.nodos, data.enlaces);
+      redCargada = true;
+    } catch (e) {
+      loading.textContent = "Error: " + e.message;
+    }
+  }
+
+  function renderizarRed(nodos, enlaces) {
+    const svgEl = document.getElementById("red-svg");
+    const W = svgEl.clientWidth  || 700;
+    const H = svgEl.clientHeight || 540;
+
+    const svg = d3.select("#red-svg");
+    svg.selectAll("*").remove();
+
+    const g = svg.append("g");
+
+    svg.call(
+      d3.zoom().scaleExtent([0.2, 5])
+        .on("zoom", e => g.attr("transform", e.transform))
+    );
+
+    const maxGrado = Math.max(...nodos.map(n => n.grado), 1);
+    const rScale   = d3.scaleSqrt().domain([0, maxGrado]).range([5, 18]);
+
+    // Resolver source/target si aún son strings
+    const nodoMap = new Map(nodos.map(n => [n.id, n]));
+    const linksResolved = enlaces.map(e => ({
+      source: nodoMap.get(e.source) ?? e.source,
+      target: nodoMap.get(e.target) ?? e.target,
+      tipo:   e.tipo,
+    }));
+
+    const sim = d3.forceSimulation(nodos)
+      .force("link",      d3.forceLink(linksResolved).id(d => d.id).distance(90).strength(0.4))
+      .force("charge",    d3.forceManyBody().strength(-220))
+      .force("center",    d3.forceCenter(W / 2, H / 2))
+      .force("collision", d3.forceCollide().radius(d => rScale(d.grado) + 5));
+
+    const link = g.append("g").selectAll("line")
+      .data(linksResolved).join("line")
+      .attr("stroke", "#d1d5db").attr("stroke-width", 1.5).attr("stroke-opacity", 0.65);
+
+    const node = g.append("g").selectAll("circle")
+      .data(nodos).join("circle")
+      .attr("r",           d => rScale(d.grado))
+      .attr("fill",        d => colorNodo(d.rol))
+      .attr("stroke",      "#fff")
+      .attr("stroke-width", 1.8)
+      .style("cursor", "pointer")
+      .on("click", (_ev, d) => seleccionarNodo(d))
+      .call(
+        d3.drag()
+          .on("start", (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+          .on("drag",  (e, d) => { d.fx = e.x; d.fy = e.y; })
+          .on("end",   (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; })
+      );
+
+    // Etiquetas solo para nodos de grado alto
+    const umbral = nodos.map(n => n.grado).sort((a,b) => a-b)[Math.floor(nodos.length * 0.65)] ?? 1;
+    const label = g.append("g").selectAll("text")
+      .data(nodos.filter(n => n.grado >= umbral)).join("text")
+      .text(d => d.nombre.split(" ").slice(0, 2).join(" "))
+      .attr("font-size", "9px").attr("fill", "#374151")
+      .attr("dy", d => -(rScale(d.grado) + 3))
+      .attr("text-anchor", "middle")
+      .style("pointer-events", "none")
+      .style("user-select", "none");
+
+    sim.on("tick", () => {
+      link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+      node.attr("cx", d => d.x).attr("cy", d => d.y);
+      label.attr("x", d => d.x).attr("y", d => d.y);
+    });
+  }
+
+  function seleccionarNodo(nodo) {
+    if (!redData) return;
+
+    const nodoMap = new Map(redData.nodos.map(n => [n.id, n]));
+    const enlacesNodo = redData.enlaces.filter(e => {
+      const sid = typeof e.source === "object" ? e.source.id : e.source;
+      const tid = typeof e.target === "object" ? e.target.id : e.target;
+      return sid === nodo.id || tid === nodo.id;
+    });
+
+    const relHtml = enlacesNodo.map(e => {
+      const sid = typeof e.source === "object" ? e.source.id : e.source;
+      const tid = typeof e.target === "object" ? e.target.id : e.target;
+      const otroId = sid === nodo.id ? tid : sid;
+      const otro   = nodoMap.get(otroId);
+      const flecha = sid === nodo.id ? "→" : "←";
+      return `<li class="red-rel-item">
+        <span class="red-rel-tipo">${escaparHTML(e.tipo)}</span>
+        ${flecha} <strong>${escaparHTML(otro?.nombre ?? "?")}</strong>
+      </li>`;
+    }).join("");
+
+    document.getElementById("red-info").innerHTML = `
+      <div class="red-info-card">
+        <div class="red-nombre">${escaparHTML(nodo.nombre)}</div>
+        <span class="red-rol">${escaparHTML(nodo.rol)}</span>
+        ${nodo.periodo ? `<div class="red-periodo">${escaparHTML(nodo.periodo)}</div>` : ""}
+        <div style="font-size:.75rem;font-weight:700;color:var(--gray-muted);margin:.5rem 0 .35rem;text-transform:uppercase;letter-spacing:.05em">
+          Relaciones <span class="red-badge">${enlacesNodo.length}</span>
+        </div>
+        ${enlacesNodo.length > 0
+          ? `<ul class="red-rel-list">${relHtml}</ul>`
+          : `<p class="red-hint">Sin relaciones registradas.</p>`
+        }
+      </div>`;
+  }
+
   // ── Modo Clase de Historia ─────────────────────────────────────
   let nivelActivo = "secundaria";
   let modoActivo  = "explicar";
@@ -2206,6 +2470,7 @@
     if (id === "estadisticas") animarBarras();
     if (id === "timeline")    inicializarTimeline();
     if (id === "mapa")        inicializarMapa();
+    if (id === "red")         inicializarRed();
   }
 
   // ── Utilidades ─────────────────────────────────────────────────
