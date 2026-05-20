@@ -984,6 +984,111 @@
       font-size: 1rem; font-weight: 700; color: var(--gray-text);
     }
 
+    /* ── Comparador de épocas ────────────────────────────────── */
+    .comparador-form {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 1.5rem 1.75rem;
+    }
+
+    .comparador-form label {
+      display: block; font-size: .8rem; font-weight: 700;
+      color: var(--gray-muted); text-transform: uppercase;
+      letter-spacing: .08em; margin-bottom: .5rem;
+    }
+
+    .comparador-form input[type="text"] {
+      width: 100%; box-sizing: border-box;
+      border: 1.5px solid var(--border); border-radius: var(--radius-card);
+      padding: .75rem 1rem; font-family: "Inter", sans-serif;
+      font-size: .92rem; color: var(--gray-text); transition: border-color .2s;
+    }
+
+    .comparador-form input[type="text"]:focus { border-color: var(--primary); outline: none; }
+
+    .periodos-grid {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: 1rem; align-items: start; margin-top: 1.1rem;
+    }
+
+    .periodo-bloque {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-card); padding: 1rem 1.1rem;
+    }
+
+    .periodo-titulo {
+      font-size: .73rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .09em; margin-bottom: .65rem;
+    }
+
+    .periodo-titulo.a { color: #2563eb; }
+    .periodo-titulo.b { color: #7c3aed; }
+
+    .periodo-chips-wrap { display: flex; flex-direction: column; gap: .38rem; }
+
+    .periodo-chip {
+      background: var(--white); color: var(--gray-muted);
+      border: 1.5px solid var(--border); border-radius: var(--radius-card);
+      padding: .38rem .75rem; font-size: .78rem; font-weight: 600;
+      cursor: pointer; transition: all .18s; text-align: left;
+      font-family: "Inter", sans-serif; width: 100%;
+    }
+
+    .periodo-chip.active-a { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
+    .periodo-chip.active-b { background: #f5f3ff; color: #6d28d9; border-color: #c4b5fd; }
+
+    .periodo-chip:hover:not(.active-a):not(.active-b) {
+      border-color: var(--primary); color: var(--primary);
+    }
+
+    .periodo-vs {
+      align-self: center; padding-top: 1.5rem;
+      font-size: .85rem; font-weight: 800;
+      color: var(--gray-muted); letter-spacing: .06em;
+    }
+
+    .comparador-result {
+      display: none; background: var(--white);
+      border: 1px solid var(--border); border-radius: var(--radius-card);
+      padding: 1.75rem 2rem; margin-top: 1.5rem;
+    }
+
+    .comparador-result.visible { display: block; }
+
+    .comparador-badge {
+      display: inline-block; font-size: .72rem; font-weight: 700; color: var(--primary);
+      text-transform: uppercase; letter-spacing: .09em;
+      background: rgba(37,99,235,.08); padding: .2rem .65rem;
+      border-radius: var(--radius-pill); margin-bottom: 1.2rem;
+    }
+
+    .comparador-fuentes-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1rem; margin-top: 1.25rem;
+      padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+
+    .comparador-fuentes-col-title {
+      font-size: .72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; margin-bottom: .5rem;
+    }
+
+    .comparador-fuentes-col-title.a { color: #1d4ed8; }
+    .comparador-fuentes-col-title.b { color: #6d28d9; }
+
+    .periodo-filter-badge {
+      display: inline-flex; align-items: center; gap: .35rem;
+      background: #eff6ff; color: #1d4ed8;
+      border: 1px solid #93c5fd; border-radius: var(--radius-pill);
+      font-size: .75rem; font-weight: 700;
+      padding: .25rem .75rem; margin-bottom: .85rem;
+    }
+
+    @media (max-width: 640px) {
+      .periodos-grid { grid-template-columns: 1fr; }
+      .periodo-vs { text-align: center; padding: 0; }
+      .comparador-fuentes-grid { grid-template-columns: 1fr; }
+    }
+
     /* ── Mapa geográfico ─────────────────────────────────────── */
     .mapa-layout {
       display: grid; grid-template-columns: 1fr 320px;
@@ -1145,6 +1250,11 @@
             id="tab-timeline-btn" aria-controls="panel-timeline"
             onclick="cambiarPestana('timeline')">
       Línea de tiempo
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-comparador-btn" aria-controls="panel-comparador"
+            onclick="cambiarPestana('comparador')">
+      Comparador
     </button>
     <button class="tab-btn" role="tab" aria-selected="false"
             id="tab-clase-btn" aria-controls="panel-clase"
@@ -1366,6 +1476,65 @@
     <div id="timeline-container"></div>
   </section>
 
+  <!-- Panel: Comparador de épocas -->
+  <section class="tab-panel" id="panel-comparador" role="tabpanel">
+
+    <div class="comparador-form">
+      <label for="input-comparador">Tema a comparar entre épocas</label>
+      <input
+        type="text"
+        id="input-comparador"
+        placeholder="Ej: educación de los pobres, disciplina religiosa, fundaciones…"
+        onkeydown="if(event.key==='Enter') ejecutarComparador()"
+      />
+
+      <div class="periodos-grid">
+        <div class="periodo-bloque">
+          <div class="periodo-titulo a">Período A</div>
+          <div class="periodo-chips-wrap" id="chips-periodo-a">
+            <button class="periodo-chip active-a" onclick="seleccionarPeriodo('a',1597,1612,this)">Fundación · 1597–1612</button>
+            <button class="periodo-chip"          onclick="seleccionarPeriodo('a',1613,1625,this)">Reconocimiento · 1613–1625</button>
+            <button class="periodo-chip"          onclick="seleccionarPeriodo('a',1626,1636,this)">Consolidación · 1626–1636</button>
+            <button class="periodo-chip"          onclick="seleccionarPeriodo('a',1637,1648,this)">Crisis y final · 1637–1648</button>
+          </div>
+        </div>
+
+        <div class="periodo-vs">VS</div>
+
+        <div class="periodo-bloque">
+          <div class="periodo-titulo b">Período B</div>
+          <div class="periodo-chips-wrap" id="chips-periodo-b">
+            <button class="periodo-chip"          onclick="seleccionarPeriodo('b',1597,1612,this)">Fundación · 1597–1612</button>
+            <button class="periodo-chip"          onclick="seleccionarPeriodo('b',1613,1625,this)">Reconocimiento · 1613–1625</button>
+            <button class="periodo-chip"          onclick="seleccionarPeriodo('b',1626,1636,this)">Consolidación · 1626–1636</button>
+            <button class="periodo-chip active-b" onclick="seleccionarPeriodo('b',1637,1648,this)">Crisis y final · 1637–1648</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.1rem">
+        <button class="btn-consultar" onclick="ejecutarComparador()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Comparar épocas
+        </button>
+      </div>
+    </div>
+
+    <div class="loading-msg" id="loading-comparador" style="display:none">
+      Buscando en ambos períodos y generando la comparación… (puede tardar 15–25 s)
+    </div>
+
+    <div class="comparador-result" id="resultado-comparador">
+      <span class="comparador-badge">Comparación generada</span>
+      <div class="informe-body" id="comparador-body"></div>
+      <div class="comparador-fuentes-grid" id="comparador-fuentes"></div>
+    </div>
+
+  </section>
+
   <!-- Panel: Clase de historia -->
   <section class="tab-panel" id="panel-clase" role="tabpanel">
 
@@ -1492,7 +1661,9 @@
   const EDGE_CONSULTAR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-archivo";
   const EDGE_FUNDADOR  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/consultar-fundador";
   const EDGE_INFORME   = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/generar-informe";
-  const EDGE_EDUCATIVO = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/modo-educativo";
+  const EDGE_EDUCATIVO  = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/modo-educativo";
+  const EDGE_PERIODO    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-periodo";
+  const EDGE_COMPARADOR = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/comparar-epocas";
   const ANON_KEY       = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmemVtcHJrZ3hkcXpxeXFqdHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzE1NzEsImV4cCI6MjA5MjEwNzU3MX0.pyuNBBH6edmqqyCkwvbpvH3zQPCzH5UnQpW2soxGDi8";
 
   const AUTH_HEADERS = {
@@ -1774,9 +1945,8 @@
     document.querySelectorAll(".tl-row").forEach(r => {
       r.classList.toggle("tl-active", r.dataset.vol === volNum);
     });
-    document.getElementById("input-buscar").value = vol.titulo;
-    cambiarPestana("buscar");
-    ejecutarBusqueda();
+    const [anio_ini, anio_fin] = tlParsearAnios(vol.anio);
+    ejecutarBusquedaPeriodo(vol.titulo, anio_ini, anio_fin);
   }
 
   // ── Mapa geográfico ────────────────────────────────────────────
@@ -2059,6 +2229,142 @@
   function truncar(texto, max = 55) {
     const p = texto.split(/\s+/);
     return p.length <= max ? texto : p.slice(0, max).join(" ") + "…";
+  }
+
+  // ── Comparador de épocas ───────────────────────────────────────
+  let periodoA = { inicio: 1597, fin: 1612 };
+  let periodoB = { inicio: 1637, fin: 1648 };
+
+  function seleccionarPeriodo(lado, ini, fin, btn) {
+    if (lado === "a") {
+      periodoA = { inicio: ini, fin: fin };
+      document.querySelectorAll("#chips-periodo-a .periodo-chip").forEach(c => c.classList.remove("active-a"));
+      btn.classList.add("active-a");
+    } else {
+      periodoB = { inicio: ini, fin: fin };
+      document.querySelectorAll("#chips-periodo-b .periodo-chip").forEach(c => c.classList.remove("active-b"));
+      btn.classList.add("active-b");
+    }
+  }
+
+  async function ejecutarComparador() {
+    const tema = document.getElementById("input-comparador").value.trim();
+    if (!tema) return;
+
+    const loading   = document.getElementById("loading-comparador");
+    const resultado = document.getElementById("resultado-comparador");
+    loading.style.display = "block";
+    resultado.classList.remove("visible");
+
+    try {
+      const resp = await fetch(EDGE_COMPARADOR, {
+        method:  "POST",
+        headers: AUTH_HEADERS,
+        body:    JSON.stringify({ tema, periodo_a: periodoA, periodo_b: periodoB }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error ?? resp.statusText);
+
+      loading.style.display = "none";
+      resultado.classList.add("visible");
+
+      document.getElementById("comparador-body").innerHTML = markdownAHtml(data.comparacion ?? "");
+
+      const fuentes_a  = data.fuentes_a ?? [];
+      const fuentes_b  = data.fuentes_b ?? [];
+      const fuentesDiv = document.getElementById("comparador-fuentes");
+
+      const renderFuentes = (fuentes) => fuentes.length > 0
+        ? fuentes.map(f => `<div class="fuente-item">
+            <a href="${escaparHTML(f.drive_url)}" target="_blank" rel="noopener" class="fuente-link">
+              ${escaparHTML(f.nombre)}</a>
+            <span class="fuente-pagina">pág. ${f.pagina}</span>
+          </div>`).join("")
+        : `<p style="font-size:.8rem;color:var(--gray-muted)">Sin fragmentos en este período.</p>`;
+
+      if (fuentes_a.length > 0 || fuentes_b.length > 0) {
+        fuentesDiv.innerHTML = `
+          <div>
+            <div class="comparador-fuentes-col-title a">Período A · ${periodoA.inicio}–${periodoA.fin}</div>
+            ${renderFuentes(fuentes_a)}
+          </div>
+          <div>
+            <div class="comparador-fuentes-col-title b">Período B · ${periodoB.inicio}–${periodoB.fin}</div>
+            ${renderFuentes(fuentes_b)}
+          </div>`;
+      } else {
+        fuentesDiv.innerHTML = "";
+      }
+    } catch (e) {
+      loading.style.display = "none";
+      resultado.classList.add("visible");
+      document.getElementById("comparador-body").innerHTML =
+        `<p style="color:#dc2626">Error: ${escaparHTML(String(e))}</p>`;
+    }
+  }
+
+  // Línea de tiempo Fase B: búsqueda filtrada por período
+  async function ejecutarBusquedaPeriodo(query, anio_ini, anio_fin) {
+    cambiarPestana("buscar");
+    document.getElementById("input-buscar").value = query;
+    document.getElementById("home-view").style.display = "none";
+    document.getElementById("resultados-busqueda").style.display = "block";
+    const btn  = document.getElementById("btn-buscar");
+    const cont = document.getElementById("resultados-busqueda");
+    btn.disabled    = true;
+    btn.textContent = "Buscando…";
+    cont.innerHTML  = "";
+
+    try {
+      const resp = await fetch(EDGE_PERIODO, {
+        method:  "POST",
+        headers: AUTH_HEADERS,
+        body:    JSON.stringify({ query, anio_ini, anio_fin }),
+      });
+      if (!resp.ok) throw new Error(`Error ${resp.status}`);
+      const { resultados, error } = await resp.json();
+      if (error) throw new Error(error);
+
+      const badge = document.createElement("div");
+      badge.className = "periodo-filter-badge";
+      badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg> Período ${anio_ini}–${anio_fin}`;
+      cont.appendChild(badge);
+
+      if (!resultados || resultados.length === 0) {
+        cont.innerHTML += `<div class="empty-state"><p>No se encontraron resultados para "<strong>${escaparHTML(query)}</strong>" en el período ${anio_ini}–${anio_fin}.</p></div>`;
+        return;
+      }
+
+      const lista = document.createElement("div");
+      lista.className = "results-list";
+      for (const r of resultados) {
+        const card = document.createElement("article");
+        card.className = "result-card";
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="page-badge">Pág. ${r.pagina}</span>
+            <span class="doc-name">${escaparHTML(r.nombre_documento)}</span>
+          </div>
+          <p class="doc-excerpt">${resaltarTermino(truncar(r.contenido), query)}</p>
+          <a class="btn-ver" href="${escaparHTML(r.drive_url)}#page=${r.pagina}" target="_blank" rel="noopener">
+            Ver documento →
+          </a>
+          <p class="page-hint">Abre el PDF y ve a la página ${r.pagina}</p>`;
+        lista.appendChild(card);
+      }
+      cont.appendChild(lista);
+    } catch (e) {
+      cont.innerHTML += `<p class="error-msg">Error: ${escaparHTML(e.message)}</p>`;
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = "Buscar";
+    }
   }
 
   // ── Búsqueda simple ────────────────────────────────────────────
