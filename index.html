@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     /* ── Variables ───────────────────────────────────────────── */
     :root {
@@ -983,6 +984,75 @@
       font-size: 1rem; font-weight: 700; color: var(--gray-text);
     }
 
+    /* ── Mapa geográfico ─────────────────────────────────────── */
+    .mapa-layout {
+      display: grid; grid-template-columns: 1fr 320px;
+      gap: 1.25rem; min-height: 520px;
+    }
+
+    #mapa-leaflet {
+      height: 520px; border-radius: var(--radius-card);
+      border: 1px solid var(--border); z-index: 0;
+    }
+
+    .mapa-side { display: flex; flex-direction: column; gap: .75rem; }
+
+    .mapa-side-header {
+      font-size: .8rem; font-weight: 700; color: var(--gray-muted);
+      text-transform: uppercase; letter-spacing: .08em;
+      padding-bottom: .5rem; border-bottom: 1px solid var(--border);
+    }
+
+    .mapa-side-body { flex: 1; overflow-y: auto; max-height: 480px; }
+
+    .mapa-hint {
+      font-size: .83rem; color: var(--gray-muted); line-height: 1.55;
+      text-align: center; padding: 2rem 1rem;
+    }
+
+    .mapa-city-info {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 1rem 1.1rem;
+      margin-bottom: .75rem;
+    }
+
+    .mapa-city-name { font-size: 1rem; font-weight: 800; color: var(--gray-text); margin-bottom: .3rem; }
+
+    .mapa-city-year {
+      display: inline-block; font-size: .75rem; font-weight: 700; color: var(--primary);
+      background: rgba(37,99,235,.08); padding: .15rem .55rem;
+      border-radius: var(--radius-pill); margin-bottom: .5rem;
+    }
+
+    .mapa-city-desc { font-size: .82rem; color: var(--gray-muted); line-height: 1.55; }
+
+    .mapa-chunk {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: .9rem 1.1rem;
+      margin-bottom: .65rem;
+    }
+
+    .mapa-chunk-doc {
+      font-size: .72rem; font-weight: 700; color: var(--primary);
+      text-transform: uppercase; letter-spacing: .05em; margin-bottom: .35rem;
+    }
+
+    .mapa-chunk-text {
+      font-size: .83rem; color: var(--gray-text); line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .mapa-chunk-meta { font-size: .7rem; color: var(--gray-muted); margin-top: .4rem; }
+
+    .mapa-loading { font-size: .83rem; color: var(--gray-muted); text-align: center; padding: 1.5rem; }
+
+    @media (max-width: 760px) {
+      .mapa-layout { grid-template-columns: 1fr; }
+      #mapa-leaflet { height: 340px; }
+      .mapa-side-body { max-height: 300px; }
+    }
+
     /* ── Responsive ──────────────────────────────────────────── */
     @media (max-width: 800px) {
       .home-volumes-grid { grid-template-columns: repeat(3, 1fr); }
@@ -1080,6 +1150,11 @@
             id="tab-clase-btn" aria-controls="panel-clase"
             onclick="cambiarPestana('clase')">
       Clase de historia
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-mapa-btn" aria-controls="panel-mapa"
+            onclick="cambiarPestana('mapa')">
+      Mapa
     </button>
     <button class="tab-btn" role="tab" aria-selected="false"
             id="tab-publicaciones-btn" aria-controls="panel-publicaciones"
@@ -1339,6 +1414,19 @@
 
   </section>
 
+  <!-- Panel: Mapa geográfico -->
+  <section class="tab-panel" id="panel-mapa" role="tabpanel">
+    <div class="mapa-layout">
+      <div id="mapa-leaflet"></div>
+      <div class="mapa-side">
+        <div class="mapa-side-header">Documentos relacionados</div>
+        <div class="mapa-side-body" id="mapa-side-body">
+          <p class="mapa-hint">Haz clic en una fundación del mapa para explorar los documentos del archivo relacionados con esa ciudad.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Panel 3: Publicaciones -->
   <section class="tab-panel" id="panel-publicaciones" role="tabpanel">
     <div class="section-heading">
@@ -1397,6 +1485,7 @@
   <p><strong>Provincia de Betania · Escuelas Pías</strong> · Archivo Digital</p>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   // ── Configuración ──────────────────────────────────────────────
   const EDGE_BUSCAR    = "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/buscar-archivo";
@@ -1690,6 +1779,107 @@
     ejecutarBusqueda();
   }
 
+  // ── Mapa geográfico ────────────────────────────────────────────
+  const FUNDACIONES = [
+    { nombre: "Roma",                   lat: 41.8919, lon: 12.4902, anio: 1597, termino: "Roma escuela fundación Trastevere",        descripcion: "Primera escuela pía gratuita del mundo, fundada en el barrio de Trastevere (Via della Lungara). Inicio de la misión educativa de Calasanz." },
+    { nombre: "Nárni",                  lat: 42.5178, lon: 12.5183, anio: 1604, termino: "Nárni Narni escuela escolapios",           descripcion: "Primera expansión fuera de Roma, en Umbría. Consolidó el modelo pedagógico de Calasanz." },
+    { nombre: "Frascati",               lat: 41.8025, lon: 12.6781, anio: 1607, termino: "Frascati Castelli Romani escuela",         descripcion: "Fundación en los Castelli Romani, Lacio. Cercana a la residencia de verano de los papas." },
+    { nombre: "Florencia",              lat: 43.7696, lon: 11.2558, anio: 1611, termino: "Florencia Toscana escuela escolapios",     descripcion: "Expansión a la Toscana bajo el patronazgo de los Médici. Amplió el alcance de la Orden a la Italia central." },
+    { nombre: "Génova",                 lat: 44.4056, lon:  8.9463, anio: 1616, termino: "Génova Liguria escuela escolapios",        descripcion: "Fundación en la República de Génova. Acercó las Escuelas Pías al norte de Italia." },
+    { nombre: "Nápoles",                lat: 40.8518, lon: 14.2681, anio: 1616, termino: "Nápoles escuela escolapios fundación",     descripcion: "Expansión al sur de Italia, en el Reino de Nápoles. Gran impacto en las comunidades más pobres." },
+    { nombre: "Savona",                 lat: 44.3068, lon:  8.4813, anio: 1622, termino: "Savona Liguria escuela",                   descripcion: "Fundación en Liguria, reforzando la presencia escolapia en la costa noroeste italiana." },
+    { nombre: "Nikolsburg (Mikulov)",   lat: 48.8054, lon: 16.6385, anio: 1631, termino: "Moravia Nikolsburg Mikulov escuela",      descripcion: "Primera fundación en el mundo germánico, en Moravia (actual República Checa). Abrió la expansión de las Escuelas Pías a Europa Central." },
+    { nombre: "Litomyšl",               lat: 49.8696, lon: 16.3116, anio: 1633, termino: "Litomyšl Bohemia escuela escolapios",     descripcion: "Segunda fundación en Bohemia-Moravia (actual República Checa), consolidando la presencia en Europa Central." },
+    { nombre: "Podolinec",              lat: 49.2542, lon: 20.5341, anio: 1642, termino: "Polonia Hungría Podolinec escuela",       descripcion: "Primera fundación en el reino de Hungría (actual Eslovaquia). Inicio de la presencia escolapia en Europa Oriental, en los últimos años de vida de Calasanz." },
+  ];
+
+  let mapaInstancia = null;
+
+  function inicializarMapa() {
+    if (mapaInstancia) return;
+
+    mapaInstancia = L.map("mapa-leaflet").setView([46.5, 13.5], 5);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(mapaInstancia);
+
+    const iconoFundacion = L.divIcon({
+      className: "",
+      html: `<svg width="28" height="34" viewBox="0 0 28 34" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="14" cy="32" rx="6" ry="2" fill="rgba(0,0,0,.2)"/>
+        <path d="M14 0C8.477 0 4 4.477 4 10c0 7.5 10 22 10 22S24 17.5 24 10c0-5.523-4.477-10-10-10z"
+          fill="#2563eb" stroke="#1e3a8a" stroke-width="1.5"/>
+        <circle cx="14" cy="10" r="4.5" fill="white"/>
+      </svg>`,
+      iconSize:   [28, 34],
+      iconAnchor: [14, 34],
+      popupAnchor:[0, -36],
+    });
+
+    for (const f of FUNDACIONES) {
+      const marker = L.marker([f.lat, f.lon], { icon: iconoFundacion }).addTo(mapaInstancia);
+      marker.bindPopup(
+        `<strong style="font-size:.9rem">${f.nombre}</strong><br>
+         <span style="color:#2563eb;font-size:.78rem;font-weight:700">Fundación: ${f.anio}</span><br>
+         <span style="font-size:.78rem;color:#6b7280">${f.descripcion.slice(0, 80)}…</span><br>
+         <a href="#" onclick="event.preventDefault();buscarEnMapa(${JSON.stringify(f)})"
+           style="font-size:.78rem;color:#2563eb;font-weight:600;text-decoration:none">
+           Ver documentos →
+         </a>`
+      );
+      marker.on("click", () => buscarEnMapa(f));
+    }
+  }
+
+  async function buscarEnMapa(f) {
+    const panel = document.getElementById("mapa-side-body");
+    panel.innerHTML = `<p class="mapa-loading">Buscando documentos sobre ${escaparHTML(f.nombre)}…</p>`;
+
+    // City info card
+    const infoCard = `<div class="mapa-city-info">
+      <div class="mapa-city-name">${escaparHTML(f.nombre)}</div>
+      <span class="mapa-city-year">Fundación: ${f.anio}</span>
+      <div class="mapa-city-desc">${escaparHTML(f.descripcion)}</div>
+    </div>`;
+
+    try {
+      const resp = await fetch(EDGE_BUSCAR, {
+        method:  "POST",
+        headers: AUTH_HEADERS,
+        body:    JSON.stringify({ query: f.termino, idioma: "es" }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error ?? resp.statusText);
+
+      const resultados = data.resultados ?? [];
+      if (resultados.length === 0) {
+        panel.innerHTML = infoCard +
+          `<p class="mapa-hint">No se encontraron fragmentos específicos sobre ${escaparHTML(f.nombre)} en el archivo.</p>`;
+        return;
+      }
+
+      let h = infoCard;
+      for (const r of resultados.slice(0, 6)) {
+        h += `<div class="mapa-chunk">
+          <div class="mapa-chunk-doc">
+            <a href="${escaparHTML(r.drive_url)}" target="_blank" rel="noopener"
+               style="color:var(--primary);text-decoration:none">
+              ${escaparHTML(r.nombre_documento)}
+            </a>
+          </div>
+          <div class="mapa-chunk-text">${escaparHTML(r.contenido)}</div>
+          <div class="mapa-chunk-meta">Pág. ${r.pagina} · Similitud ${(r.similarity * 100).toFixed(0)}%</div>
+        </div>`;
+      }
+      panel.innerHTML = h;
+    } catch (e) {
+      panel.innerHTML = infoCard +
+        `<p class="mapa-hint" style="color:#dc2626">Error: ${escaparHTML(String(e))}</p>`;
+    }
+  }
+
   // ── Modo Clase de Historia ─────────────────────────────────────
   let nivelActivo = "secundaria";
   let modoActivo  = "explicar";
@@ -1845,6 +2035,7 @@
     });
     if (id === "estadisticas") animarBarras();
     if (id === "timeline")    inicializarTimeline();
+    if (id === "mapa")        inicializarMapa();
   }
 
   // ── Utilidades ─────────────────────────────────────────────────
