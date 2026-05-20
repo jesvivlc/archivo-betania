@@ -325,6 +325,7 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
   - `6ee0515` — Línea de tiempo interactiva Fase A (#3)
   - `b0e3e3b` — Clase de historia: modo-educativo Edge Fn + tab (#6)
   - `25d48c4` — Mapa geográfico de fundaciones con Leaflet.js (#8)
+  - `5621c51` — Comparador de épocas + Línea de tiempo Fase B (#7 + #3B)
 
 ---
 
@@ -355,16 +356,20 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 
 ### Sprint 2 — Impacto investigador alto
 
-#### ✅ 3. Línea de tiempo interactiva — COMPLETADO (2026-05-19)
+#### ✅ 3. Línea de tiempo interactiva — COMPLETADO Fase A+B (2026-05-21)
 - **Qué:** Visualización horizontal 1597–1648 con los volúmenes y eventos clave.
-- **Implementado (Fase A):**
+- **Implementado (Fase A — 2026-05-19):**
   - Tab "Línea de tiempo" con lazy init (`inicializarTimeline()` en `cambiarPestana`).
   - Eje de años (1597–1648), 5 eventos históricos marcados, 10 filas de volúmenes color-coded.
   - `tlParsearAnios()` maneja fechas aproximadas (`c. 1615`) y rangos con en-dash.
-  - Clic en volumen → activa búsqueda en tab Búsqueda (`filtrarTimeline()`).
   - Commit: `6ee0515`
-- **Fase B pendiente:** migración de schema con `anio_inicio`/`anio_fin` en `documentos`.
-- **Schema:** sin cambios (Fase A).
+- **Implementado (Fase B — 2026-05-21):**
+  - `documentos` tiene columnas `anio_inicio` y `anio_fin` (SMALLINT, rellenadas para los 10 volúmenes).
+  - `buscar_chunks_periodo()` RPC en Supabase con solapamiento de intervalos.
+  - `filtrarTimeline(volNum)` llama a `ejecutarBusquedaPeriodo()` con el rango exacto del volumen.
+  - Los resultados muestran badge azul "Período XXXX–XXXX".
+  - Commit: `5621c51`
+- **Schema:** `ALTER TABLE documentos ADD COLUMN anio_inicio/anio_fin SMALLINT` + índice `idx_documentos_periodo`.
 
 #### ✅ 4. Informes automáticos por tema — COMPLETADO (2026-05-19)
 - **Qué:** Genera un documento estructurado (resumen / detallado / académico) sobre cualquier tema del archivo.
@@ -398,14 +403,14 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 
 ### Sprint 4 — Herramientas de investigación
 
-#### 7. Comparador de épocas
-- **Qué:** Compara cómo evolucionó un tema a lo largo de la vida de Calasanz (ej. 1610 vs. 1645).
-- **Dependencias:** Requiere Fase B de la línea de tiempo (columnas de fecha en `documentos`).
-- **Arquitectura:**
-  - Nueva Edge Function `comparar-epocas`.
-  - Búsquedas paralelas filtradas por período. Gemini estructura tabla comparativa.
-- **Schema:** requiere migración (igual que Línea de tiempo Fase B).
-- **Esfuerzo estimado:** 5-6 horas (+ la migración de schema).
+#### ✅ 7. Comparador de épocas — COMPLETADO (2026-05-21)
+- **Qué:** Compara cómo evolucionó un tema entre dos períodos de la vida de Calasanz.
+- **Implementado:**
+  - Edge Function `buscar-periodo`: wrapper de `buscar_chunks_periodo` (threshold 0.25, match_count 10).
+  - Edge Function `comparar-epocas`: `Promise.all` para buscar en ambos períodos en paralelo → Gemini síntesis con 4 secciones fijas (contexto A, contexto B, evolución, citas).
+  - Tab "Comparador" con 4 períodos predefinidos por lado (Fundación/Reconocimiento/Consolidación/Crisis), chips de color azul (A) y violeta (B), resultado en markdown con fuentes en dos columnas.
+  - Commit: `5621c51`
+- **Schema:** usa `buscar_chunks_periodo()` ya creada. Sin cambios adicionales.
 
 #### ✅ 8. Mapa geográfico de la Provincia — COMPLETADO (2026-05-20)
 - **Qué:** Mapa interactivo con las fundaciones escolapias (Roma 1597, Nárni, Frascati, Florencia, Génova, Moravia, Polonia...).
