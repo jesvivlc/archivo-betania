@@ -125,12 +125,14 @@ def generar_embedding(texto: str) -> list[float]:
 # Supabase REST
 # ─────────────────────────────────────────
 
-def estado_documento(drive_file_id: str) -> tuple[str, int | None]:
+def estado_documento(drive_file_id: str) -> tuple[str, int | None, int, int]:
     """
-    Devuelve ("nuevo", None), ("sin_chunks", doc_id) o ("completo", doc_id).
-    - "nuevo"      → no existe en documentos, hay que crearlo e indexar.
-    - "sin_chunks" → existe en documentos pero no tiene chunks, indexar usando el id existente.
-    - "completo"   → existe y tiene chunks, saltar.
+    Devuelve (estado, doc_id, ultima_pagina, ultimo_chunk_index).
+    - "nuevo"      → no existe en documentos.
+    - "sin_chunks" → existe pero sin chunks. ultima_pagina=0, ultimo_chunk_index=-1.
+    - "parcial"    → existe con chunks (puede estar completo o interrumpido).
+                     ultima_pagina = número de página más alto ya indexado.
+                     ultimo_chunk_index = chunk_index más alto ya guardado.
     """
     resp = requests.get(
         f"{SUPABASE_URL}/rest/v1/documentos",
@@ -142,22 +144,28 @@ def estado_documento(drive_file_id: str) -> tuple[str, int | None]:
     filas = resp.json()
 
     if not filas:
-        return "nuevo", None
+        return "nuevo", None, 0, -1
 
     doc_id = filas[0]["id"]
 
     resp2 = requests.get(
         f"{SUPABASE_URL}/rest/v1/chunks",
         headers=SUPA_HEADERS,
-        params={"documento_id": f"eq.{doc_id}", "select": "id", "limit": 1},
+        params={
+            "documento_id": f"eq.{doc_id}",
+            "select":       "pagina,chunk_index",
+            "order":        "pagina.desc",
+            "limit":        1,
+        },
         timeout=15,
     )
     resp2.raise_for_status()
+    rows = resp2.json()
 
-    if resp2.json():
-        return "completo", doc_id
+    if not rows:
+        return "sin_chunks", doc_id, 0, -1
 
-    return "sin_chunks", doc_id
+    return "parcial", doc_id, rows[0]["pagina"], rows[0]["chunk_index"]
 
 
 def insertar_documento(nombre: str, drive_file_id: str,
@@ -217,11 +225,8 @@ def main():
 
         print(f"[{num}/{len(pdfs)}] {nombre}")
 
-        estado, doc_id = estado_documento(drive_file_id)
+        estado, doc_id, ultima_pagina, ultimo_chunk_idx = estado_documento(drive_file_id)
 
-        if estado == "completo":
-            print("  ✓ Ya indexado. Saltando.\n")
-            continue
         if estado == "sin_chunks":
             print(f"  ↻ Documento ya existe (id={doc_id}) pero sin chunks — reanudando indexación.")
 
@@ -238,9 +243,21 @@ def main():
             os.remove(TEMP_PDF)
             continue
 
+        # "parcial": comprobar si está realmente completo o hay páginas sin indexar
+        if estado == "parcial":
+            if ultima_pagina >= total_paginas - 5:
+                print(f"  ✓ Ya indexado (última pág: {ultima_pagina}/{total_paginas}). Saltando.\n")
+                doc.close()
+                os.remove(TEMP_PDF)
+                continue
+            else:
+                print(f"  ↻ Parcialmente indexado (última pág: {ultima_pagina}/{total_paginas}). Reanudando desde pág {ultima_pagina + 1}...")
+
         if estado == "nuevo":
             doc_id = insertar_documento(nombre, drive_file_id, drive_url, total_paginas)
-        chunk_index   = 0
+
+        # Continuar el chunk_index desde donde quedó
+        chunk_index   = ultimo_chunk_idx + 1 if estado == "parcial" else 0
         total_errores = 0
 
         for inicio in range(0, total_paginas, 10):
@@ -248,6 +265,10 @@ def main():
             chunks = extraer_chunks_paginas(doc, inicio, fin)
 
             for chunk in chunks:
+                # Saltar páginas ya indexadas
+                if chunk["pagina"] <= ultima_pagina:
+                    continue
+
                 for intento in range(1, MAX_REINTENTOS + 1):
                     try:
                         embedding = generar_embedding(chunk["texto"])
