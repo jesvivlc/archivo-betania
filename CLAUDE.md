@@ -330,6 +330,7 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
   - `25d48c4` — Mapa geográfico de fundaciones con Leaflet.js (#8)
   - `5621c51` — Comparador de épocas + Línea de tiempo Fase B (#7 + #3B)
   - `59c1c45` — Red de personas y relaciones: D3 graph + Edge Fn (#9)
+  - `45ac890` — fix: schema.sql — buscar_chunks_periodo + tablas personas/relaciones (auditoría bugs)
 
 ---
 
@@ -436,7 +437,7 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
   - Edge Function `red-personas` (GET): devuelve top-60 personas por grado + sus relaciones como `{nodos, enlaces}`.
   - Frontend: pestaña "Red de personas" con grafo D3.js v7 force-directed. Nodos coloreados por rol, tamaño por grado, drag+zoom, clic → tarjeta de información con lista de relaciones. Inicialización lazy.
   - Commit: `59c1c45`
-- **Para poblar la BD:** ejecutar `python extraer_personas.py` (~8h a 6s/chunk).
+- **Para poblar la BD:** ejecutar `python extraer_personas.py` (~8h a 5s/chunk). Reanudable: guarda progreso en `.temp/procesados.txt`. Proceso iniciado 2026-05-29 (105 chunks ya procesados al inicio).
 
 #### 10. Resumen semanal por email
 - **Qué:** Email automático semanal con fragmentos destacados del archivo.
@@ -457,12 +458,19 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 vercel --prod
 
 # Desplegar una Edge Function (PowerShell, desde raíz del proyecto)
+# IMPORTANTE: el CLI de Supabase debe estar logueado con jesvivlc@gmail.com
+# Si da 403: .\supabase.exe logout → .\supabase.exe login → .\supabase.exe link --project-ref afzemprkgxdqzqyqjtxt
 .\supabase.exe functions deploy buscar-archivo
 .\supabase.exe functions deploy consultar-archivo
 .\supabase.exe functions deploy consultar-fundador
+.\supabase.exe functions deploy generar-informe
+.\supabase.exe functions deploy modo-educativo
+.\supabase.exe functions deploy buscar-periodo
+.\supabase.exe functions deploy comparar-epocas
+.\supabase.exe functions deploy red-personas
 
 # Ver secretos configurados
-supabase secrets list
+.\supabase.exe secrets list
 
 # Indexar nuevos PDFs
 python indexar.py
@@ -497,6 +505,4 @@ git push
   Para preguntas complejas (4+ búsquedas internas) puede tardar 8-15 segundos.
   Implementar streaming con SSE mejoraría la UX percibida.
 
-- **Chunks sin metadatos temporales:** No hay campo `fecha` en los chunks.
-  Esto limita las funcionalidades de filtrado temporal hasta implementar la
-  migración de schema (ver Línea de tiempo Fase B).
+- **Metadatos temporales a nivel documento, no chunk:** `anio_inicio`/`anio_fin` están en la tabla `documentos`, no en `chunks`. El filtrado temporal funciona a nivel de volumen completo (todos los chunks del Epistolario III, por ejemplo). No hay fechas específicas por carta/chunk.
