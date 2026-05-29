@@ -124,6 +124,13 @@ posiciona a Calasanz como narrador en primera persona, obliga a citar solo texto
 del corpus y a traducir fragmentos en latín/italiano. No se necesita una capa
 extra de infraestructura — solo ingeniería de prompt.
 
+**Paleta principal (rediseño 2026-05-29)**
+Paleta navy + dorado en vez del azul plano + naranja original:
+`--blue: #1a3a5c`, `--blue-dark: #0f2540`, `--orange: #c9973a` (dorado académico).
+Fondo cálido `--gray-bg: #f5f3ee`. Tipografía `Lora` (serif, Google Fonts) para
+títulos, headers de sección y el label "Opera Omnia". Tabs en fila única con
+scroll horizontal (sin wrap). Hero con gradiente oscuro y textura geométrica sutil.
+
 **Paleta sepia para el Modo Fundador**
 Theming visual diferenciado mediante CSS custom properties:
 `--sepia: #7B5E2A`, `--sepia-dark: #5C3D0F`, `--sepia-light: #FEF9EE`,
@@ -331,6 +338,9 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
   - `5621c51` — Comparador de épocas + Línea de tiempo Fase B (#7 + #3B)
   - `59c1c45` — Red de personas y relaciones: D3 graph + Edge Fn (#9)
   - `45ac890` — fix: schema.sql — buscar_chunks_periodo + tablas personas/relaciones (auditoría bugs)
+  - `e5c040b` — fix: indexar.py — reanudación por página para documentos parcialmente indexados
+  - `7394892` — fix: extraer_personas.py — gemini-2.0-flash descontinuado, cambio a gemini-2.5-flash
+  - (rediseño visual) — paleta navy+dorado, tipografía Lora, tabs scroll, hero mejorado
 
 ---
 

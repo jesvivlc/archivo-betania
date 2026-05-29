@@ -6,24 +6,25 @@
   <title>Archivo Digital · Provincia de Betania · Escuelas Pías</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     /* ── Variables ───────────────────────────────────────────── */
     :root {
-      --blue:       #0057A8;
-      --blue-dark:  #003D7A;
-      --blue-light: #E8F1FB;
-      --orange:     #F47920;
-      --orange-lt:  #FEF0E6;
+      --blue:       #1a3a5c;
+      --blue-dark:  #0f2540;
+      --blue-light: #e8eef5;
+      --orange:     #c9973a;
+      --orange-lt:  #fdf4e3;
+      --gold-border:#e0c98a;
       --white:      #FFFFFF;
-      --gray-bg:    #F5F7FA;
-      --gray-text:  #2D2D2D;
+      --gray-bg:    #f5f3ee;
+      --gray-text:  #1e1e1e;
       --gray-muted: #6B7280;
-      --gray-border:#E5E7EB;
-      --shadow-sm:  0 1px 3px rgba(0,0,0,.08);
-      --shadow-md:  0 4px 16px rgba(0,0,0,.10);
-      --shadow-lg:  0 8px 32px rgba(0,0,0,.12);
+      --gray-border:#e0ddd6;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,.07);
+      --shadow-md:  0 4px 16px rgba(0,0,0,.09);
+      --shadow-lg:  0 8px 32px rgba(0,0,0,.13);
       --radius-card:12px;
       --radius-btn: 8px;
       --radius-pill:24px;
@@ -45,12 +46,12 @@
     /* ── Header ──────────────────────────────────────────────── */
     header {
       background: var(--white);
-      border-bottom: 3px solid var(--blue);
+      border-bottom: 2px solid var(--orange);
       padding: .85rem 1.5rem;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 1px 8px rgba(0,0,0,.06);
     }
 
     .header-inner {
@@ -64,28 +65,46 @@
     .header-logo { height: 50px; width: auto; object-fit: contain; flex-shrink: 0; }
     .header-divider { width: 1px; height: 36px; background: var(--gray-border); flex-shrink: 0; }
 
-    .header-text h1 { font-size: 1.05rem; font-weight: 700; color: var(--blue); line-height: 1.2; }
+    .header-text h1 { font-size: 1.05rem; font-weight: 700; color: var(--blue); line-height: 1.2; font-family: 'Lora', Georgia, serif; }
     .header-text p  { font-size: .72rem; font-weight: 500; color: var(--gray-muted); letter-spacing: .04em; text-transform: uppercase; margin-top: .1rem; }
 
     /* ── Hero ────────────────────────────────────────────────── */
     .hero {
-      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
-      padding: 3.5rem 1.5rem 4rem;
+      background: linear-gradient(160deg, #1a3a5c 0%, #0f2540 60%, #0a1a2e 100%);
+      padding: 3.5rem 1.5rem 4.5rem;
       text-align: center;
       color: var(--white);
+      position: relative;
     }
 
-    .hero h2 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; margin-bottom: .6rem; }
-    .hero p  { font-size: 1rem; color: rgba(255,255,255,.75); margin-bottom: 2rem; }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700;
+      margin-bottom: .7rem;
+      font-family: 'Lora', Georgia, serif;
+      letter-spacing: -.01em;
+      position: relative;
+    }
+
+    .hero p  { font-size: 1rem; color: rgba(255,255,255,.68); margin-bottom: 2.25rem; position: relative; letter-spacing: .01em; }
 
     .hero-search {
       display: flex;
-      max-width: 620px;
+      max-width: 640px;
       margin: 0 auto;
       background: var(--white);
       border-radius: var(--radius-pill);
       overflow: hidden;
-      box-shadow: var(--shadow-lg);
+      box-shadow: 0 8px 40px rgba(0,0,0,.28);
+      position: relative;
     }
 
     .hero-search input {
@@ -96,12 +115,13 @@
 
     .hero-search button {
       background: var(--orange); color: var(--white); border: none;
-      padding: .9rem 1.5rem;
+      padding: .9rem 1.6rem;
       font-family: "Inter", sans-serif; font-size: .9rem; font-weight: 600;
       cursor: pointer; transition: background .2s; white-space: nowrap;
+      letter-spacing: .02em;
     }
 
-    .hero-search button:hover    { background: #d9660f; }
+    .hero-search button:hover    { background: #a87b28; }
     .hero-search button:disabled { opacity: .55; cursor: default; }
 
     .lang-selector {
@@ -135,15 +155,20 @@
     main { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
 
     /* ── Tab pills ───────────────────────────────────────────── */
-    .tab-pills { display: flex; gap: .5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .tab-pills {
+      display: flex; gap: .45rem; margin-bottom: 2rem;
+      flex-wrap: nowrap; overflow-x: auto; padding-bottom: .35rem;
+      scrollbar-width: none;
+    }
+    .tab-pills::-webkit-scrollbar { display: none; }
 
     .tab-btn {
       background: var(--white);
       border: 1.5px solid var(--gray-border);
       border-radius: var(--radius-pill);
-      padding: .5rem 1.25rem;
-      font-family: "Inter", sans-serif; font-size: .88rem; font-weight: 600;
-      color: var(--gray-muted); cursor: pointer;
+      padding: .45rem 1.1rem;
+      font-family: "Inter", sans-serif; font-size: .84rem; font-weight: 600;
+      color: var(--gray-muted); cursor: pointer; white-space: nowrap; flex-shrink: 0;
       transition: background .2s, color .2s, border-color .2s;
     }
 
@@ -155,10 +180,11 @@
 
     /* ── Section heading ─────────────────────────────────────── */
     .section-heading {
-      font-size: 1.05rem; font-weight: 700; color: var(--gray-text);
+      font-size: 1.1rem; font-weight: 700; color: var(--blue);
       margin-bottom: 1.5rem; padding-bottom: .65rem;
       border-bottom: 2px solid var(--gray-border);
       display: flex; align-items: center; gap: .55rem;
+      font-family: 'Lora', Georgia, serif; letter-spacing: -.01em;
     }
 
     .heading-icon {
@@ -173,7 +199,10 @@
     .result-card {
       background: var(--white); border-radius: var(--radius-card);
       border-top: 3px solid var(--orange);
-      padding: 1.25rem 1.4rem; box-shadow: var(--shadow-md);
+      border-left: 1px solid var(--gray-border);
+      border-right: 1px solid var(--gray-border);
+      border-bottom: 1px solid var(--gray-border);
+      padding: 1.25rem 1.4rem; box-shadow: var(--shadow-sm);
       transition: transform .2s, box-shadow .2s;
     }
 
@@ -197,7 +226,7 @@
       transition: background .2s, transform .1s;
     }
 
-    .btn-ver:hover  { background: #d9660f; }
+    .btn-ver:hover  { background: #a87b28; }
     .btn-ver:active { transform: translateY(1px); }
     .page-hint { margin: 4px 0 0; font-size: .75rem; color: #888; }
 
@@ -245,10 +274,11 @@
 
     .btn-primary {
       background: var(--blue); color: var(--white); border: none;
-      border-radius: var(--radius-btn); padding: .65rem 1.4rem;
-      font-family: "Inter", sans-serif; font-size: .9rem; font-weight: 600;
+      border-radius: var(--radius-btn); padding: .65rem 1.5rem;
+      font-family: "Inter", sans-serif; font-size: .88rem; font-weight: 600;
       cursor: pointer; display: inline-flex; align-items: center; gap: .45rem;
       transition: background .2s, transform .1s;
+      letter-spacing: .02em;
     }
 
     .btn-primary:hover    { background: var(--blue-dark); }
@@ -294,7 +324,7 @@
 
     .chip {
       display: inline-flex; align-items: center; gap: .35rem;
-      background: var(--orange-lt); color: var(--orange); border: 1px solid #FBCFA3;
+      background: var(--orange-lt); color: var(--orange); border: 1px solid var(--gold-border);
       border-radius: var(--radius-pill); padding: .3rem .85rem;
       font-size: .78rem; font-weight: 600; text-decoration: none;
       transition: background .2s, color .2s;
@@ -458,9 +488,45 @@
     }
 
     /* ── Footer ──────────────────────────────────────────────── */
-    footer { background: var(--blue); padding: 1.25rem 1.5rem; text-align: center; }
-    footer p { color: rgba(255,255,255,.6); font-size: .78rem; letter-spacing: .05em; }
+    footer { background: var(--blue-dark); padding: 2rem 1.5rem 1.5rem; text-align: center; border-top: 3px solid var(--orange); }
+    footer p { color: rgba(255,255,255,.55); font-size: .78rem; letter-spacing: .05em; }
     footer strong { color: rgba(255,255,255,.9); font-weight: 600; }
+
+    .footer-suscripcion {
+      max-width: 480px; margin: 0 auto 1.5rem;
+      border-top: 1px solid rgba(255,255,255,.15);
+      padding-top: 1.5rem;
+    }
+    .footer-suscripcion-titulo {
+      font-size: .8rem; font-weight: 700; color: rgba(255,255,255,.8);
+      text-transform: uppercase; letter-spacing: .1em; margin-bottom: .5rem;
+    }
+    .footer-suscripcion-desc {
+      font-size: .78rem; color: rgba(255,255,255,.5); margin-bottom: 1rem; line-height: 1.55;
+    }
+    .footer-form {
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+    .footer-form-row { display: flex; gap: .5rem; }
+    .footer-input {
+      flex: 1; padding: .5rem .75rem; border-radius: var(--radius-pill);
+      border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.1);
+      color: #fff; font-size: .82rem; outline: none;
+    }
+    .footer-input::placeholder { color: rgba(255,255,255,.4); }
+    .footer-input:focus { border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.15); }
+    .footer-btn {
+      padding: .5rem 1.25rem; border-radius: var(--radius-pill);
+      background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
+      color: #fff; font-size: .82rem; font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: background .15s;
+    }
+    .footer-btn:hover:not(:disabled) { background: rgba(255,255,255,.28); }
+    .footer-btn:disabled { opacity: .6; cursor: default; }
+    .footer-msg { font-size: .78rem; min-height: 1.2em; }
+    @media (max-width: 500px) {
+      .footer-form-row { flex-direction: column; }
+    }
 
     /* ── Home volumes grid ───────────────────────────────────── */
     .header-logo-link { display: flex; align-items: center; flex-shrink: 0; }
@@ -469,10 +535,11 @@
     .home-intro { margin-bottom: .5rem; }
 
     .home-intro-label {
-      font-size: .78rem; font-weight: 700; color: var(--gray-muted);
-      text-transform: uppercase; letter-spacing: .07em;
+      font-size: .72rem; font-weight: 700; color: var(--orange);
+      text-transform: uppercase; letter-spacing: .1em;
       margin-bottom: 1rem;
       display: flex; align-items: center; gap: .6rem;
+      font-family: 'Lora', Georgia, serif;
     }
 
     .home-intro-label::after { content: ''; flex: 1; height: 1px; background: var(--gray-border); }
@@ -516,7 +583,7 @@
       position: absolute; top: .4rem; left: .4rem;
       background: var(--orange); color: var(--white);
       font-size: .6rem; font-weight: 700;
-      padding: .14rem .42rem; border-radius: 4px; letter-spacing: .03em;
+      padding: .14rem .45rem; border-radius: 4px; letter-spacing: .04em;
     }
 
     .home-vol-info { padding: .5rem .6rem .6rem; }
@@ -1751,6 +1818,20 @@
 
 <!-- ── Footer ─────────────────────────────────────────────────── -->
 <footer>
+  <div class="footer-suscripcion">
+    <p class="footer-suscripcion-titulo">Fragmentos semanales por email</p>
+    <p class="footer-suscripcion-desc">Recibe cada lunes tres fragmentos destacados del archivo de San José de Calasanz.</p>
+    <div class="footer-form">
+      <div class="footer-form-row">
+        <input class="footer-input" id="footer-nombre" type="text"
+               placeholder="Nombre (opcional)" autocomplete="given-name">
+        <input class="footer-input" id="footer-email" type="email"
+               placeholder="Correo electrónico" autocomplete="email" required>
+        <button class="footer-btn" id="footer-btn" onclick="suscribirse()">Suscribirse</button>
+      </div>
+      <p class="footer-msg" id="footer-msg"></p>
+    </div>
+  </div>
   <p><strong>Provincia de Betania · Escuelas Pías</strong> · Archivo Digital</p>
 </footer>
 
@@ -2471,6 +2552,57 @@
     if (id === "timeline")    inicializarTimeline();
     if (id === "mapa")        inicializarMapa();
     if (id === "red")         inicializarRed();
+  }
+
+  // ── Suscripción al resumen semanal ────────────────────────────
+  const SUPABASE_REST = "https://afzemprkgxdqzqyqjtxt.supabase.co/rest/v1";
+
+  async function suscribirse() {
+    const email  = document.getElementById("footer-email").value.trim();
+    const nombre = document.getElementById("footer-nombre").value.trim();
+    const msg    = document.getElementById("footer-msg");
+    const btn    = document.getElementById("footer-btn");
+
+    if (!email || !email.includes("@")) {
+      msg.textContent = "Introduce un correo electrónico válido.";
+      msg.style.color = "#fca5a5";
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = "Enviando…";
+    msg.textContent = "";
+
+    try {
+      const resp = await fetch(`${SUPABASE_REST}/suscriptores`, {
+        method:  "POST",
+        headers: {
+          "Content-Type":  "application/json",
+          "apikey":        ANON_KEY,
+          "Authorization": `Bearer ${ANON_KEY}`,
+          "Prefer":        "return=minimal",
+        },
+        body: JSON.stringify({ email, nombre: nombre || null }),
+      });
+
+      if (resp.status === 409) {
+        msg.textContent = "Este correo ya está suscrito.";
+        msg.style.color = "#fde68a";
+      } else if (resp.ok) {
+        msg.textContent = "✓ Suscripción confirmada. ¡Bienvenido/a!";
+        msg.style.color = "#86efac";
+        document.getElementById("footer-email").value  = "";
+        document.getElementById("footer-nombre").value = "";
+      } else {
+        throw new Error(`Error ${resp.status}`);
+      }
+    } catch (e) {
+      msg.textContent = "Error al suscribirse: " + e.message;
+      msg.style.color = "#fca5a5";
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = "Suscribirse";
+    }
   }
 
   // ── Utilidades ─────────────────────────────────────────────────
