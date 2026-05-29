@@ -160,19 +160,17 @@
 
     /* ── Tab pills ───────────────────────────────────────────── */
     .tab-pills {
-      display: flex; gap: .45rem; margin-bottom: 2rem;
-      flex-wrap: nowrap; overflow-x: auto; padding-bottom: .35rem;
-      scrollbar-width: none;
+      display: flex; gap: .38rem; margin-bottom: 2rem;
+      flex-wrap: wrap;
     }
-    .tab-pills::-webkit-scrollbar { display: none; }
 
     .tab-btn {
       background: var(--white);
       border: 1.5px solid var(--gray-border);
       border-radius: var(--radius-pill);
-      padding: .45rem 1.1rem;
-      font-family: "Inter", sans-serif; font-size: .84rem; font-weight: 600;
-      color: var(--gray-muted); cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      padding: .38rem .95rem;
+      font-family: "Inter", sans-serif; font-size: .8rem; font-weight: 600;
+      color: var(--gray-muted); cursor: pointer; white-space: nowrap;
       transition: background .2s, color .2s, border-color .2s;
     }
 
