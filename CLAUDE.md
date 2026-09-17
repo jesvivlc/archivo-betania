@@ -137,9 +137,9 @@ Theming visual diferenciado mediante CSS custom properties:
 `--sepia-border: #DDD0A8`, `--sepia-muted: #9C7A3A`.
 Permite distinguir visualmente el contexto histórico del buscador moderno.
 
-**Supabase CLI: usar `.\supabase.exe` en PowerShell**
-El binario `supabase.exe` está en la raíz del proyecto y no está en el PATH.
-Siempre usar `.\supabase.exe functions deploy <nombre>` desde PowerShell.
+**Supabase CLI: usar `supabase`**
+El CLI está instalado en `~/.local/bin/supabase` y ya está en el PATH.
+Siempre usar `supabase functions deploy <nombre>` desde la raíz del proyecto.
 Docker no es necesario para deploy remoto (solo para desarrollo local).
 La advertencia `WARNING: Docker is not running` puede ignorarse en deploys remotos.
 
@@ -318,10 +318,10 @@ Totales: 10 volúmenes · 3.949 páginas · 5.413 chunks indexados.
 
 ### Edge Functions (Supabase)
 - Proyecto ref: `afzemprkgxdqzqyqjtxt`
-- Deploy: `.\supabase.exe functions deploy <nombre>` (PowerShell desde raíz del proyecto)
+- Deploy: `supabase functions deploy <nombre>` (desde la raíz del proyecto)
 - Funciones desplegadas: `buscar-archivo`, `consultar-archivo`, `consultar-fundador`, `generar-informe`, `modo-educativo`, `buscar-periodo`, `comparar-epocas`, `red-personas`
 - Runtime: Deno (no necesita package.json)
-- Vinculación: `.\supabase.exe link --project-ref afzemprkgxdqzqyqjtxt`
+- Vinculación: `supabase link --project-ref afzemprkgxdqzqyqjtxt`
 
 ### Git / GitHub
 - Repositorio: **https://github.com/jesvivlc/archivo-betania**
@@ -467,20 +467,20 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 # Desplegar frontend
 vercel --prod
 
-# Desplegar una Edge Function (PowerShell, desde raíz del proyecto)
+# Desplegar una Edge Function (desde la raíz del proyecto)
 # IMPORTANTE: el CLI de Supabase debe estar logueado con jesvivlc@gmail.com
-# Si da 403: .\supabase.exe logout → .\supabase.exe login → .\supabase.exe link --project-ref afzemprkgxdqzqyqjtxt
-.\supabase.exe functions deploy buscar-archivo
-.\supabase.exe functions deploy consultar-archivo
-.\supabase.exe functions deploy consultar-fundador
-.\supabase.exe functions deploy generar-informe
-.\supabase.exe functions deploy modo-educativo
-.\supabase.exe functions deploy buscar-periodo
-.\supabase.exe functions deploy comparar-epocas
-.\supabase.exe functions deploy red-personas
+# Si da 403: supabase logout → supabase login → supabase link --project-ref afzemprkgxdqzqyqjtxt
+supabase functions deploy buscar-archivo
+supabase functions deploy consultar-archivo
+supabase functions deploy consultar-fundador
+supabase functions deploy generar-informe
+supabase functions deploy modo-educativo
+supabase functions deploy buscar-periodo
+supabase functions deploy comparar-epocas
+supabase functions deploy red-personas
 
 # Ver secretos configurados
-.\supabase.exe secrets list
+supabase secrets list
 
 # Indexar nuevos PDFs
 python indexar.py
