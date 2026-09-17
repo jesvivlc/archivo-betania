@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -NonInteractive -File \"${CLAUDE_PROJECT_DIR}/.claude/hooks/mark-needs-update.ps1\"",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/mark-needs-update.sh\"",
             "timeout": 10
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -NonInteractive -File \"${CLAUDE_PROJECT_DIR}/.claude/hooks/check-update.ps1\"",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/check-update.sh\"",
             "timeout": 10
           }
         ]
