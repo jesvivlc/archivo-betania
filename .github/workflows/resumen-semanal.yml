@@ -1,0 +1,28 @@
+name: Resumen semanal · Archivo Betania
+
+on:
+  schedule:
+    # Todos los lunes a las 8:00 UTC (9h España peninsular en invierno, 10h en verano)
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+    # Permite lanzarlo manualmente desde GitHub → Actions → Run workflow
+
+jobs:
+  enviar-resumen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar Edge Function enviar-resumen
+        run: |
+          HTTP_STATUS=$(curl -s -o /tmp/response.json -w "%{http_code}" \
+            -X POST \
+            "https://afzemprkgxdqzqyqjtxt.supabase.co/functions/v1/enviar-resumen" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -H "x-cron-secret: ${{ secrets.RESUMEN_CRON_SECRET }}" \
+            -d '{}')
+          echo "HTTP status: $HTTP_STATUS"
+          cat /tmp/response.json
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Error: la función devolvió estado $HTTP_STATUS"
+            exit 1
+          fi
