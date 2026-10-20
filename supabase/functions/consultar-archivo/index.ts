@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { respuestaSSE } from "../_shared/agente.ts";
 import { proteger, corsHeaders, errorInterno, textoValido, json, LIMITES_AGENTE } from "../_shared/guard.ts";
 
 // Tope de rondas del bucle agentic: evita gasto ilimitado de Gemini por petición.
@@ -141,6 +142,15 @@ serve(async (req: Request) => {
     const contents: unknown[] = [
       { role: "user", parts: [{ text: preguntaBusqueda }] },
     ];
+
+    // Modo streaming (SSE): lo activa el frontend con { stream: true }.
+    if (g.body.stream === true) {
+      return respuestaSSE({
+        contents, systemInstruction: SYSTEM_INSTRUCTION, tools: TOOLS, apiKey: GEMINI_API_KEY,
+        maxVueltas: MAX_VUELTAS, cors: CORS_HEADERS,
+        buscar: (termino) => buscarEnSupabase(supa, termino, GEMINI_API_KEY),
+      });
+    }
 
     const fuentesMap = new Map<string, Fuente>();
 

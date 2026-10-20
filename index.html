@@ -1461,7 +1461,7 @@
       <div class="dots" aria-hidden="true">
         <span></span><span></span><span></span>
       </div>
-      El archivero está consultando los documentos…
+      <span id="estado-agente">El archivero está consultando los documentos…</span>
     </div>
 
     <div class="agent-response" id="respuesta-agente">
@@ -1524,7 +1524,7 @@
         <span style="background:var(--sepia)"></span>
         <span style="background:var(--sepia)"></span>
       </div>
-      Calasanz está buscando en sus escritos…
+      <span id="estado-fundador">Calasanz está buscando en sus escritos…</span>
     </div>
 
     <div class="fundador-response" id="respuesta-fundador">
@@ -2832,6 +2832,42 @@
   }
 
   // ── Agente ─────────────────────────────────────────────────────
+  // ── Consulta con streaming (SSE) a los agentes ────────────────
+  // Lee los eventos `data: {json}` de la Edge Function; devuelve las fuentes.
+  async function consultarStreaming(url, cuerpo, { onEstado, onTexto }) {
+    const resp = await fetch(url, {
+      method:  "POST",
+      headers: AUTH_HEADERS,
+      body:    JSON.stringify({ ...cuerpo, stream: true }),
+    });
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}));
+      throw new Error(data.error ?? `Error ${resp.status}`);
+    }
+    const lector = resp.body.getReader();
+    const dec    = new TextDecoder();
+    let buf = "", fuentes = [], terminado = false;
+    for (;;) {
+      const { done, value } = await lector.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i;
+      while ((i = buf.indexOf("\n\n")) >= 0) {
+        const bloque = buf.slice(0, i).trim();
+        buf = buf.slice(i + 2);
+        if (!bloque.startsWith("data:")) continue;
+        let ev;
+        try { ev = JSON.parse(bloque.slice(5)); } catch { throw new Error("Respuesta del servidor ilegible."); }
+        if (ev.tipo === "estado") onEstado(ev.texto);
+        else if (ev.tipo === "texto") onTexto(ev.texto);
+        else if (ev.tipo === "fin") { fuentes = ev.fuentes ?? []; terminado = true; }
+        else if (ev.tipo === "error") throw new Error(ev.error);
+      }
+    }
+    if (!terminado) throw new Error("La respuesta se cortó antes de terminar.");
+    return fuentes;
+  }
+
   async function ejecutarConsulta() {
     const pregunta   = document.getElementById("input-pregunta").value.trim();
     const btn        = document.getElementById("btn-consultar");
@@ -2849,22 +2885,19 @@
     textoEl.textContent      = "";
     chipsEl.innerHTML        = "";
     fuentesSec.style.display = "none";
+    document.getElementById("estado-agente").textContent = "El archivero está consultando los documentos…";
 
     try {
-      const resp = await fetch(EDGE_CONSULTAR, {
-        method:  "POST",
-        headers: AUTH_HEADERS,
-        body:    JSON.stringify({ pregunta, idioma: idiomaActivo }),
+      const estadoEl = document.getElementById("estado-agente");
+      const fuentes = await consultarStreaming(EDGE_CONSULTAR, { pregunta, idioma: idiomaActivo }, {
+        onEstado: (t) => { estadoEl.textContent = t; },
+        onTexto:  (t) => {
+          textoEl.textContent += t;
+          respBox.classList.add("visible");
+        },
       });
 
-      if (!resp.ok) throw new Error(`Error ${resp.status}`);
-      const { respuesta, fuentes, error } = await resp.json();
-      if (error) throw new Error(error);
-
-      textoEl.textContent = respuesta;
-      respBox.classList.add("visible");
-
-      if (fuentes && fuentes.length > 0) {
+      if (fuentes.length > 0) {
         fuentesSec.style.display = "block";
         for (const f of fuentes) {
           const chip = document.createElement("a");
@@ -2967,22 +3000,19 @@
     textoEl.textContent      = "";
     chipsEl.innerHTML        = "";
     fuentesSec.style.display = "none";
+    document.getElementById("estado-fundador").textContent = "Calasanz está buscando en sus escritos…";
 
     try {
-      const resp = await fetch(EDGE_FUNDADOR, {
-        method:  "POST",
-        headers: AUTH_HEADERS,
-        body:    JSON.stringify({ pregunta }),
+      const estadoEl = document.getElementById("estado-fundador");
+      const fuentes = await consultarStreaming(EDGE_FUNDADOR, { pregunta }, {
+        onEstado: (t) => { estadoEl.textContent = t; },
+        onTexto:  (t) => {
+          textoEl.textContent += t;
+          respBox.classList.add("visible");
+        },
       });
 
-      if (!resp.ok) throw new Error(`Error ${resp.status}`);
-      const { respuesta, fuentes, error } = await resp.json();
-      if (error) throw new Error(error);
-
-      textoEl.textContent = respuesta;
-      respBox.classList.add("visible");
-
-      if (fuentes && fuentes.length > 0) {
+      if (fuentes.length > 0) {
         fuentesSec.style.display = "block";
         for (const f of fuentes) {
           const chip = document.createElement("a");
