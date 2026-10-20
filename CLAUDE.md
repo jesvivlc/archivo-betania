@@ -461,6 +461,26 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 
 ---
 
+### Protección de las Edge Functions (rate limiting)
+
+Todas las funciones pasan por `supabase/functions/_shared/guard.ts` (`proteger()`):
+CORS limitado a `archivo-betania.vercel.app` (+ localhost), método y JSON válidos
+(máx. 8 KB), texto de entrada ≤ 500 caracteres, y límites por IP (hash SHA-256,
+ventanas de 1 min y 1 h) más tope global diario por función. Los contadores están
+en Postgres (`rate_limit` + `check_rate_limit()`, ver `schema.sql`). Límites:
+
+| Perfil | Funciones | IP/min | IP/h | Global/día |
+|---|---|---|---|---|
+| Pesado | generar-informe, comparar-epocas | 3 | 20 | 1.000 |
+| Agente | consultar-archivo, consultar-fundador, modo-educativo | 6 | 60 | 3.000 |
+| Ligero | buscar-archivo, buscar-periodo, red-personas | 30 | 300 | 20.000 |
+
+Si la RPC falla (p. ej. SQL aún sin aplicar) se deja pasar (fail-open) y se registra; si faltan `DB_URL`/`DB_SERVICE_KEY` se responde 503. IP: `cf-connecting-ip`, o el último valor de `x-forwarded-for` (**verificar en producción qué cabecera llega**). Un `Origin` fuera de la lista recibe 403. Los errores
+500 ya no devuelven `stack`. El bucle agentic tiene tope de 6 rondas. Tests:
+`deno test --allow-env --allow-net supabase/functions/_shared/guard_test.ts`.
+**Orden de despliegue:** primero aplicar el SQL de rate limiting en Supabase, luego
+desplegar las 8 funciones y por último `vercel --prod` (maxlength en el frontend).
+
 ## Comandos frecuentes
 
 ```bash

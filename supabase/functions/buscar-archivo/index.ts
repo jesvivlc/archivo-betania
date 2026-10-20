@@ -1,11 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { proteger, corsHeaders, errorInterno, textoValido, json, LIMITES_LIGERO } from "../_shared/guard.ts";
 
 const GEMINI_EMBED_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent";
@@ -51,16 +46,16 @@ serve(async (req: Request) => {
   const DB_SERVICE_KEY = Deno.env.get("DB_SERVICE_KEY") ?? "";
   const DB_URL         = Deno.env.get("DB_URL") ?? "";
 
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: CORS_HEADERS });
-  }
+  const g = await proteger(req, { funcion: "buscar-archivo", limites: LIMITES_LIGERO });
+  if (!g.ok) return g.res;
+  const CORS_HEADERS = corsHeaders(req);
 
   try {
-    const { query, idioma } = await req.json() as { query: string; idioma?: string };
+    const { query, idioma } = g.body as { query: string; idioma?: string };
 
-    if (!query?.trim()) {
+    if (!textoValido(query)) {
       return new Response(
-        JSON.stringify({ error: "El campo 'query' es obligatorio." }),
+        JSON.stringify({ error: "El campo 'query' es obligatorio (máximo 500 caracteres)." }),
         { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
       );
     }
@@ -87,9 +82,6 @@ serve(async (req: Request) => {
       { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
     );
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: String(err), stack: (err as Error)?.stack }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
+    return errorInterno(err, CORS_HEADERS);
   }
 });
