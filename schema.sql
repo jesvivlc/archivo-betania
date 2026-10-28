@@ -162,3 +162,49 @@ create policy "Lectura pública personas"
 create policy "Lectura pública relaciones"
     on relaciones for select
     using (true);
+
+-- ─────────────────────────────────────────
+-- Rate limiting de las Edge Functions
+-- ─────────────────────────────────────────
+-- Contador de ventana fija. Lo usa supabase/functions/_shared/guard.ts con la
+-- service_role; ni anon ni authenticated pueden leerlo ni ejecutar la función.
+create table if not exists rate_limit (
+    clave   text        not null,
+    ventana timestamptz not null,
+    n       int         not null default 0,
+    primary key (clave, ventana)
+);
+
+alter table rate_limit enable row level security;  -- sin políticas: acceso solo service_role
+
+create or replace function check_rate_limit(
+    p_clave       text,
+    p_limite      int,
+    p_ventana_seg int
+) returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+    v_ventana timestamptz;
+    v_n       int;
+begin
+    v_ventana := to_timestamp(floor(extract(epoch from now()) / p_ventana_seg) * p_ventana_seg);
+
+    insert into rate_limit (clave, ventana, n)
+    values (p_clave || ':' || p_ventana_seg, v_ventana, 1)
+    on conflict (clave, ventana) do update set n = rate_limit.n + 1
+    returning n into v_n;
+
+    -- Limpieza oportunista (~1 % de las llamadas): filas de más de 2 días
+    if random() < 0.01 then
+        delete from rate_limit where ventana < now() - interval '2 days';
+    end if;
+
+    return v_n <= p_limite;
+end;
+$$;
+
+revoke all on function check_rate_limit(text, int, int) from public, anon, authenticated;
+grant execute on function check_rate_limit(text, int, int) to service_role;

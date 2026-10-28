@@ -1,11 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { proteger, corsHeaders, errorInterno, textoValido, json, LIMITES_AGENTE } from "../_shared/guard.ts";
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+// Tope de rondas del bucle agentic: evita gasto ilimitado de Gemini por petición.
+const MAX_VUELTAS = 6;
 
 const GEMINI_EMBED_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent";
@@ -114,16 +112,16 @@ serve(async (req: Request) => {
   const DB_SERVICE_KEY = Deno.env.get("DB_SERVICE_KEY") ?? "";
   const DB_URL         = Deno.env.get("DB_URL") ?? "";
 
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: CORS_HEADERS });
-  }
+  const g = await proteger(req, { funcion: "consultar-fundador", limites: LIMITES_AGENTE });
+  if (!g.ok) return g.res;
+  const CORS_HEADERS = corsHeaders(req);
 
   try {
-    const { pregunta } = await req.json() as { pregunta: string };
+    const { pregunta } = g.body as { pregunta: string };
 
-    if (!pregunta?.trim()) {
+    if (!textoValido(pregunta)) {
       return new Response(
-        JSON.stringify({ error: "El campo 'pregunta' es obligatorio." }),
+        JSON.stringify({ error: "El campo 'pregunta' es obligatorio (máximo 500 caracteres)." }),
         { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
       );
     }
@@ -136,7 +134,7 @@ serve(async (req: Request) => {
 
     const fuentesMap = new Map<string, Fuente>();
 
-    while (true) {
+    for (let vuelta = 0; vuelta < MAX_VUELTAS; vuelta++) {
       const geminiData = await llamarGemini(contents, GEMINI_API_KEY) as {
         candidates: Array<{
           content: { role: string; parts: Array<Record<string, unknown>> };
@@ -168,7 +166,7 @@ serve(async (req: Request) => {
 
       for (const part of functionCalls) {
         const fc      = part.functionCall as { name: string; args: { termino: string } };
-        const termino = fc.args.termino;
+        const termino = textoValido(fc.args?.termino) ?? "";
         let respContent: string;
 
         try {
@@ -192,7 +190,8 @@ serve(async (req: Request) => {
                 .join("\n\n---\n\n")
             : "No se encontraron fragmentos relevantes para este término.";
         } catch (e) {
-          respContent = `Error al buscar: ${e instanceof Error ? e.message : String(e)}`;
+          console.error(e);
+          respContent = "Búsqueda no disponible en este momento.";
         }
 
         functionResponseParts.push({
@@ -205,10 +204,8 @@ serve(async (req: Request) => {
 
       contents.push({ role: "user", parts: functionResponseParts });
     }
+    throw new Error("El agente superó el máximo de rondas de búsqueda.");
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: String(err), stack: (err as Error)?.stack }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
+    return errorInterno(err, CORS_HEADERS);
   }
 });

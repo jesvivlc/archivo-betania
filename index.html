@@ -1339,6 +1339,7 @@
     <input
       type="text"
       id="input-buscar"
+      maxlength="500"
       placeholder="Busca por tema, documento, fecha…"
       aria-label="Búsqueda en el archivo"
       onkeydown="if(event.key==='Enter') ejecutarBusqueda()"
@@ -1441,6 +1442,7 @@
       <label for="input-pregunta">Pregunta al archivero</label>
       <textarea
         id="input-pregunta"
+        maxlength="500"
         placeholder="Haz una pregunta sobre los documentos de la provincia..."
         aria-label="Pregunta al archivero"
         onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)) ejecutarConsulta()"
@@ -1501,6 +1503,7 @@
       <label for="input-fundador">Tu pregunta a Calasanz</label>
       <textarea
         id="input-fundador"
+        maxlength="500"
         placeholder="¿Qué te llevó a fundar las primeras escuelas gratuitas?…"
         aria-label="Pregunta a Calasanz"
         onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)) ejecutarFundador()"
@@ -1547,6 +1550,7 @@
       <input
         type="text"
         id="input-tema"
+        maxlength="500"
         placeholder="Ej: La educación gratuita de los niños pobres según Calasanz"
         aria-label="Tema del informe"
         onkeydown="if(event.key==='Enter') ejecutarInforme()"
@@ -1618,6 +1622,7 @@
       <input
         type="text"
         id="input-comparador"
+        maxlength="500"
         placeholder="Ej: educación de los pobres, disciplina religiosa, fundaciones…"
         onkeydown="if(event.key==='Enter') ejecutarComparador()"
       />
@@ -1676,6 +1681,7 @@
       <label for="input-clase">Tema o pregunta para la clase</label>
       <textarea
         id="input-clase"
+        maxlength="500"
         placeholder="Ej: ¿Por qué Calasanz fundó escuelas gratuitas para niños pobres?"
         rows="2"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ejecutarClase();}"

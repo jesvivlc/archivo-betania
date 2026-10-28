@@ -1,11 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-};
+import { proteger, corsHeaders, errorInterno, textoValido, json, LIMITES_LIGERO } from "../_shared/guard.ts";
 
 interface Persona {
   id:      string;
@@ -24,7 +19,9 @@ serve(async (req: Request) => {
   const DB_SERVICE_KEY = Deno.env.get("DB_SERVICE_KEY") ?? "";
   const DB_URL         = Deno.env.get("DB_URL") ?? "";
 
-  if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+  const g = await proteger(req, { funcion: "red-personas", limites: LIMITES_LIGERO, metodo: "GET" });
+  if (!g.ok) return g.res;
+  const CORS_HEADERS = corsHeaders(req, "GET, OPTIONS");
 
   try {
     const supa = createClient(DB_URL, DB_SERVICE_KEY);
@@ -83,9 +80,6 @@ serve(async (req: Request) => {
       { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
     );
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: String(err) }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
+    return errorInterno(err, CORS_HEADERS);
   }
 });

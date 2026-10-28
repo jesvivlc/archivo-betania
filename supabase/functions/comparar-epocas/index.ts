@@ -1,11 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { proteger, corsHeaders, errorInterno, textoValido, json, LIMITES_PESADO } from "../_shared/guard.ts";
 
 const GEMINI_EMBED_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent";
@@ -13,6 +8,8 @@ const GEMINI_CHAT_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 interface Periodo   { inicio: number; fin: number; }
+
+const anioValido = (a: unknown) => Number.isInteger(a) && (a as number) >= 1500 && (a as number) <= 1700;
 
 interface ChunkResult {
   chunk_id:         string;
@@ -101,22 +98,24 @@ serve(async (req: Request) => {
   const DB_SERVICE_KEY = Deno.env.get("DB_SERVICE_KEY") ?? "";
   const DB_URL         = Deno.env.get("DB_URL") ?? "";
 
-  if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+  const g = await proteger(req, { funcion: "comparar-epocas", limites: LIMITES_PESADO });
+  if (!g.ok) return g.res;
+  const CORS_HEADERS = corsHeaders(req);
 
   try {
-    const { tema, periodo_a, periodo_b } = await req.json() as {
+    const { tema, periodo_a, periodo_b } = g.body as {
       tema:      string;
       periodo_a: Periodo;
       periodo_b: Periodo;
     };
 
-    if (!tema?.trim()) {
+    if (!textoValido(tema)) {
       return new Response(
-        JSON.stringify({ error: "El campo 'tema' es obligatorio." }),
+        JSON.stringify({ error: "El campo 'tema' es obligatorio (máximo 500 caracteres)." }),
         { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
       );
     }
-    if (!periodo_a?.inicio || !periodo_a?.fin || !periodo_b?.inicio || !periodo_b?.fin) {
+    if (![periodo_a?.inicio, periodo_a?.fin, periodo_b?.inicio, periodo_b?.fin].every(anioValido)) {
       return new Response(
         JSON.stringify({ error: "periodo_a y periodo_b requieren inicio y fin." }),
         { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
@@ -150,9 +149,6 @@ serve(async (req: Request) => {
       { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
     );
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: String(err), stack: (err as Error)?.stack }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
+    return errorInterno(err, CORS_HEADERS);
   }
 });

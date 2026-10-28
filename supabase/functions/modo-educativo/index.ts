@@ -1,11 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { proteger, corsHeaders, errorInterno, textoValido, json, LIMITES_AGENTE } from "../_shared/guard.ts";
 
 const GEMINI_EMBED_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent";
@@ -121,22 +116,26 @@ serve(async (req: Request) => {
   const DB_SERVICE_KEY = Deno.env.get("DB_SERVICE_KEY") ?? "";
   const DB_URL         = Deno.env.get("DB_URL") ?? "";
 
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: CORS_HEADERS });
-  }
+  const g = await proteger(req, { funcion: "modo-educativo", limites: LIMITES_AGENTE });
+  if (!g.ok) return g.res;
+  const CORS_HEADERS = corsHeaders(req);
 
   try {
     const {
       pregunta,
       nivel  = "secundaria",
       modo   = "explicar",
-    } = await req.json() as { pregunta: string; nivel?: Nivel; modo?: Modo };
+    } = g.body as { pregunta: string; nivel?: Nivel; modo?: Modo };
 
-    if (!pregunta?.trim()) {
+    if (!textoValido(pregunta)) {
       return new Response(
-        JSON.stringify({ error: "El campo 'pregunta' es obligatorio." }),
+        JSON.stringify({ error: "El campo 'pregunta' es obligatorio (máximo 500 caracteres)." }),
         { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
       );
+    }
+
+    if (!Object.hasOwn(NIVEL_DESC, nivel) || !Object.hasOwn(MODO_INSTRUCCION, modo)) {
+      return json({ error: "nivel o modo no válido." }, 400, CORS_HEADERS);
     }
 
     const supa = createClient(DB_URL, DB_SERVICE_KEY);
@@ -195,9 +194,6 @@ ${contexto}`;
       { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
     );
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: String(err), stack: (err as Error)?.stack }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
+    return errorInterno(err, CORS_HEADERS);
   }
 });
