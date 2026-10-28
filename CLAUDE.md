@@ -531,8 +531,10 @@ git push
   el bucle agentic no usa historial multi-turno — cada pregunta es una conversación
   nueva. No hay memoria entre preguntas del usuario.
 
-- **Sin streaming:** `consultar-archivo` devuelve la respuesta completa al final.
-  Para preguntas complejas (4+ búsquedas internas) puede tardar 8-15 segundos.
-  Implementar streaming con SSE mejoraría la UX percibida.
+- **Streaming (SSE) en los agentes:** `consultar-archivo` y `consultar-fundador` responden en
+  `text/event-stream` si el cuerpo lleva `stream: true` (lo envía el frontend); sin ese campo
+  devuelven el JSON completo como antes. Eventos `estado` / `texto` / `fin` / `error`; el bucle
+  vive en `supabase/functions/_shared/agente.ts` (tests: `agente_test.ts`). `generar-informe`,
+  `modo-educativo` y `comparar-epocas` siguen sin streaming.
 
 - **Metadatos temporales a nivel documento, no chunk:** `anio_inicio`/`anio_fin` están en la tabla `documentos`, no en `chunks`. El filtrado temporal funciona a nivel de volumen completo (todos los chunks del Epistolario III, por ejemplo). No hay fechas específicas por carta/chunk.
