@@ -464,7 +464,7 @@ Ordenadas por impacto (ver análisis completo en el historial de conversación).
 ### Protección de las Edge Functions (rate limiting)
 
 Todas las funciones pasan por `supabase/functions/_shared/guard.ts` (`proteger()`):
-CORS limitado a `archivo-betania.vercel.app` (+ localhost), método y JSON válidos
+CORS limitado a `archivo-betania.vercel.app` y `memoria.didactia.eu` (+ localhost), método y JSON válidos
 (máx. 8 KB), texto de entrada ≤ 500 caracteres, y límites por IP (hash SHA-256,
 ventanas de 1 min y 1 h) más tope global diario por función. Los contadores están
 en Postgres (`rate_limit` + `check_rate_limit()`, ver `schema.sql`). Límites:
